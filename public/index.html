@@ -1,66 +1,1175 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Engine Console</title>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>SupaForge — Supabase Alternative</title>
 <style>
-:root{--bg:#0b1117;--panel:#111a22;--panel2:#151f2a;--line:#243241;--text:#e6edf3;--muted:#8b9bad;--green:#3ecf8e;--green2:#193c30;--red:#ff6b6b;--yellow:#ffd166;--blue:#79c0ff;--radius:14px;--mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}*{box-sizing:border-box}body{margin:0;min-height:100vh;background:radial-gradient(circle at 20% 0,#18382d 0,#0b1117 36%),var(--bg);color:var(--text);font:14px Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,sans-serif}button,input,textarea,select{font:inherit;border:1px solid var(--line);border-radius:10px;background:#0d141b;color:var(--text);padding:10px 12px}button{cursor:pointer}button.primary{background:linear-gradient(135deg,var(--green),#78f6bd);border:0;color:#06170f;font-weight:800}button.ghost{background:transparent}button.danger{background:#35171d;color:#ffb4b4;border-color:#5b2931}.layout{display:grid;grid-template-columns:280px 1fr;min-height:100vh}.sidebar{border-right:1px solid var(--line);background:rgba(11,17,23,.8);backdrop-filter:blur(18px);padding:18px;display:flex;flex-direction:column;gap:18px}.brand{display:flex;gap:12px;align-items:center}.logo{width:42px;height:42px;border-radius:12px;background:var(--green);display:grid;place-items:center;color:#062015;font-size:22px;font-weight:900}.brand h1{font-size:18px;margin:0}.brand p{margin:2px 0 0;color:var(--muted);font-size:12px}.nav{display:grid;gap:7px}.nav button{text-align:left;border:0;background:transparent;color:var(--muted);padding:11px 12px}.nav button.active,.nav button:hover{background:var(--panel2);color:var(--text)}.key-card{margin-top:auto;background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:14px;display:grid;gap:10px}.main{padding:26px;overflow:auto}.top{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px}.top h2{margin:0;font-size:28px}.top p{margin:5px 0 0;color:var(--muted)}.grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}.card{background:rgba(17,26,34,.86);border:1px solid var(--line);border-radius:var(--radius);padding:16px;box-shadow:0 14px 40px rgba(0,0,0,.18)}.metric{font-size:28px;font-weight:800}.label{color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:.08em}.split{display:grid;grid-template-columns:340px 1fr;gap:16px}.table-list{display:grid;gap:8px;max-height:64vh;overflow:auto}.table-item{padding:12px;border:1px solid var(--line);border-radius:12px;background:#0d141b;display:flex;justify-content:space-between;cursor:pointer}.table-item.active{border-color:var(--green);background:var(--green2)}.toolbar{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:12px}.toolbar input{min-width:220px}.table-wrap{overflow:auto;border:1px solid var(--line);border-radius:var(--radius)}table{width:100%;border-collapse:collapse}th,td{padding:11px 12px;border-bottom:1px solid var(--line);text-align:left;white-space:nowrap}th{color:var(--muted);font-size:12px;background:#0d141b;position:sticky;top:0}td input{width:100%;min-width:110px;font-family:var(--mono)}textarea{width:100%;min-height:190px;font-family:var(--mono);line-height:1.5}.result{white-space:pre-wrap;font-family:var(--mono);font-size:12px;max-height:370px;overflow:auto;background:#0d141b;border:1px solid var(--line);border-radius:var(--radius);padding:14px}.pill{display:inline-flex;align-items:center;gap:6px;padding:5px 9px;border-radius:999px;background:#0d141b;border:1px solid var(--line);color:var(--muted);font-size:12px}.ok{color:var(--green)}.warn{color:var(--yellow)}.error{color:var(--red)}.modal{position:fixed;inset:0;background:rgba(0,0,0,.5);display:grid;place-items:center;padding:20px}.modal-box{width:min(560px,100%);background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:18px}.fields{display:grid;gap:10px;margin:14px 0}.cols{display:grid;gap:8px}.col-row{display:grid;grid-template-columns:1fr 130px auto auto auto;gap:8px}.toast{position:fixed;right:20px;bottom:20px;background:var(--panel);border:1px solid var(--line);border-left:4px solid var(--green);border-radius:12px;padding:12px 14px;box-shadow:0 20px 40px rgba(0,0,0,.3)}.empty{padding:36px;text-align:center;color:var(--muted);border:1px dashed var(--line);border-radius:var(--radius)}@media(max-width:900px){.layout{grid-template-columns:1fr}.sidebar{position:sticky;top:0;z-index:5}.grid,.split{grid-template-columns:1fr}}
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0f0f0f;--surface:#1c1c1c;--surface2:#242424;--surface3:#2a2a2a;
+  --border:#2e2e2e;--border2:#3a3a3a;
+  --text:#ededed;--muted:#a0a0a0;--muted2:#6e6e6e;
+  --brand:#3ECF8E;--brand-dim:#1a4731;--brand-dark:#2ba86d;
+  --red:#e5484d;--red-dim:#3b1219;--yellow:#f5a623;--blue:#3b82f6;
+  --radius:8px;--radius-sm:6px;--mono:"JetBrains Mono",ui-monospace,monospace;
+  --sidebar:220px;
+}
+body{background:var(--bg);color:var(--text);font:13px Inter,system-ui,sans-serif;min-height:100vh;display:flex;flex-direction:column}
+a{color:inherit;text-decoration:none}
+button{font:inherit;cursor:pointer;border:none;outline:none}
+input,textarea,select{font:inherit;outline:none}
+::-webkit-scrollbar{width:5px;height:5px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px}
+.topbar{height:48px;border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 16px;gap:12px;background:var(--surface);position:sticky;top:0;z-index:100;flex-shrink:0}
+.topbar-logo{display:flex;align-items:center;gap:8px;font-weight:700;font-size:15px;color:var(--brand);width:var(--sidebar);flex-shrink:0}
+.topbar-project{display:flex;align-items:center;gap:6px;font-size:13px;color:var(--muted);border-left:1px solid var(--border);padding-left:12px}
+.topbar-project span{color:var(--text);font-weight:500}
+.topbar-right{margin-left:auto;display:flex;align-items:center;gap:8px}
+.badge{display:inline-flex;align-items:center;gap:4px;padding:3px 8px;border-radius:999px;font-size:11px;font-weight:600;letter-spacing:.03em}
+.badge-green{background:var(--brand-dim);color:var(--brand)}
+.badge-red{background:var(--red-dim);color:var(--red)}
+.badge-yellow{background:#3a2a00;color:var(--yellow)}
+.layout{display:flex;flex:1;min-height:0;height:calc(100vh - 48px)}
+.sidebar{width:var(--sidebar);border-right:1px solid var(--border);background:var(--surface);display:flex;flex-direction:column;flex-shrink:0;overflow-y:auto}
+.nav-section{padding:8px 0}
+.nav-label{padding:6px 16px;font-size:10px;font-weight:700;color:var(--muted2);text-transform:uppercase;letter-spacing:.08em}
+.nav-item{display:flex;align-items:center;gap:9px;padding:7px 16px;font-size:12px;font-weight:500;color:var(--muted);cursor:pointer;border-left:2px solid transparent;transition:all .12s}
+.nav-item:hover{color:var(--text);background:var(--surface2)}
+.nav-item.active{color:var(--brand);background:var(--brand-dim);border-left-color:var(--brand)}
+.nav-item svg{width:15px;height:15px;flex-shrink:0}
+.nav-divider{height:1px;background:var(--border);margin:4px 0}
+.sidebar-bottom{margin-top:auto;border-top:1px solid var(--border);padding:12px}
+.key-input-wrap{display:flex;flex-direction:column;gap:6px}
+.key-label{font-size:10px;font-weight:600;color:var(--muted2);text-transform:uppercase;letter-spacing:.06em}
+.key-input{background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:6px 10px;color:var(--text);width:100%;font-size:11px}
+.key-input:focus{border-color:var(--brand)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:7px 14px;border-radius:var(--radius-sm);font-size:12px;font-weight:600;cursor:pointer;transition:all .12s;border:1px solid transparent}
+.btn-sm{padding:5px 10px;font-size:11px}
+.btn-brand{background:var(--brand);color:#021a0d;border-color:var(--brand)}
+.btn-brand:hover{background:var(--brand-dark)}
+.btn-outline{background:transparent;border-color:var(--border2);color:var(--text)}
+.btn-outline:hover{background:var(--surface2)}
+.btn-ghost{background:transparent;color:var(--muted)}
+.btn-ghost:hover{color:var(--text)}
+.btn-danger{background:var(--red-dim);color:var(--red);border-color:var(--red-dim)}
+.btn-danger:hover{border-color:var(--red)}
+.btn-full{width:100%}
+.main{flex:1;display:flex;flex-direction:column;overflow:hidden}
+.page-header{padding:20px 24px 12px;display:flex;align-items:flex-start;justify-content:space-between;flex-shrink:0;border-bottom:1px solid var(--border)}
+.page-title{font-size:20px;font-weight:700;letter-spacing:-.02em}
+.page-sub{font-size:12px;color:var(--muted);margin-top:2px}
+.page-body{flex:1;overflow-y:auto;padding:20px 24px}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px}
+.card-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.card-title{font-size:13px;font-weight:600}
+.grid-4{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.grid-2{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+.metric-val{font-size:26px;font-weight:800;letter-spacing:-.03em;color:var(--brand)}
+.metric-label{font-size:11px;color:var(--muted);margin-top:2px;text-transform:uppercase;letter-spacing:.05em}
+.split{display:flex;flex:1;overflow:hidden;min-height:0}
+.split-left{width:240px;flex-shrink:0;border-right:1px solid var(--border);display:flex;flex-direction:column;overflow:hidden}
+.split-right{flex:1;display:flex;flex-direction:column;overflow:hidden}
+.pane-header{padding:10px 14px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-shrink:0;gap:8px}
+.pane-header-title{font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+.pane-body{flex:1;overflow-y:auto}
+.table-list-item{display:flex;align-items:center;gap:8px;padding:9px 14px;font-size:12px;cursor:pointer;color:var(--muted);border-bottom:1px solid var(--border);transition:.1s}
+.table-list-item:hover{background:var(--surface2);color:var(--text)}
+.table-list-item.active{background:var(--brand-dim);color:var(--brand)}
+.data-grid{flex:1;overflow:auto}
+.data-grid table{width:100%;border-collapse:collapse;font-size:12px}
+.data-grid th{position:sticky;top:0;background:var(--surface2);padding:9px 12px;text-align:left;font-weight:600;font-size:11px;color:var(--muted);border-bottom:1px solid var(--border);border-right:1px solid var(--border);white-space:nowrap;z-index:1}
+.data-grid td{padding:7px 12px;border-bottom:1px solid var(--border);border-right:1px solid var(--border);font-family:var(--mono);font-size:11px;white-space:nowrap;max-width:220px;overflow:hidden;text-overflow:ellipsis;vertical-align:middle}
+.data-grid td:last-child,.data-grid th:last-child{border-right:none}
+.data-grid tr:hover td{background:var(--surface2)}
+.null-val{color:var(--muted2);font-style:italic}
+.row-actions{display:flex;gap:4px;opacity:0;transition:.1s}
+tr:hover .row-actions{opacity:1}
+.toolbar{display:flex;align-items:center;gap:8px;padding:10px 14px;border-bottom:1px solid var(--border);flex-shrink:0;flex-wrap:wrap}
+.search-input{background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:6px 10px;color:var(--text);font-size:12px;width:200px}
+.search-input:focus{border-color:var(--brand)}
+.sql-textarea{background:var(--surface2);color:var(--text);border:1px solid var(--border);border-radius:var(--radius);padding:14px;font-family:var(--mono);font-size:12px;line-height:1.6;resize:none;width:100%}
+.sql-textarea:focus{border-color:var(--brand)}
+.sql-result{background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);font-family:var(--mono);font-size:11px;overflow:auto;max-height:300px}
+.sql-result-table{width:100%;border-collapse:collapse}
+.sql-result-table th{background:var(--surface3);padding:7px 12px;font-size:11px;color:var(--muted);text-align:left;border-bottom:1px solid var(--border);position:sticky;top:0;font-weight:600}
+.sql-result-table td{padding:6px 12px;border-bottom:1px solid var(--border);font-size:11px}
+.sql-msg{padding:14px;color:var(--muted);font-size:12px}
+.users-table{width:100%;border-collapse:collapse;font-size:12px}
+.users-table th{padding:9px 14px;text-align:left;font-size:11px;font-weight:600;color:var(--muted);border-bottom:1px solid var(--border);background:var(--surface2);position:sticky;top:0}
+.users-table td{padding:9px 14px;border-bottom:1px solid var(--border);vertical-align:middle}
+.users-table tr:hover td{background:var(--surface2)}
+.avatar{width:28px;height:28px;border-radius:50%;background:var(--brand-dim);color:var(--brand);display:inline-flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0}
+.bucket-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px}
+.bucket-card{background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);padding:16px;cursor:pointer;transition:.12s;position:relative}
+.bucket-card:hover{border-color:var(--brand)}
+.bucket-icon{font-size:28px;margin-bottom:8px}
+.bucket-name{font-weight:600;font-size:13px}
+.bucket-meta{font-size:11px;color:var(--muted);margin-top:3px}
+.bucket-badge{position:absolute;top:10px;right:10px;font-size:10px;padding:2px 7px;border-radius:999px;border:1px solid var(--border);color:var(--muted);background:var(--surface3)}
+.file-list{width:100%;border-collapse:collapse;font-size:12px}
+.file-list th{padding:8px 14px;text-align:left;font-size:11px;color:var(--muted);border-bottom:1px solid var(--border);background:var(--surface2);position:sticky;top:0;font-weight:600}
+.file-list td{padding:8px 14px;border-bottom:1px solid var(--border)}
+.file-list tr:hover td{background:var(--surface2)}
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.65);display:flex;align-items:center;justify-content:center;z-index:999;padding:20px;backdrop-filter:blur(4px)}
+.modal{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:20px;width:min(480px,100%);display:flex;flex-direction:column;gap:14px;box-shadow:0 25px 60px rgba(0,0,0,.5);max-height:90vh;overflow-y:auto}
+.modal-title{font-size:16px;font-weight:700}
+.modal-footer{display:flex;gap:8px;justify-content:flex-end;border-top:1px solid var(--border);padding-top:14px;margin-top:4px}
+.field{display:flex;flex-direction:column;gap:5px}
+.field label{font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.04em}
+.field input,.field select,.field textarea{background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:8px 10px;color:var(--text);font-size:12px;width:100%}
+.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--brand)}
+.field-hint{font-size:11px;color:var(--muted2)}
+.code-block{background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);padding:14px;font-family:var(--mono);font-size:11px;line-height:1.7;white-space:pre-wrap;overflow-x:auto}
+#toast-root{position:fixed;bottom:20px;right:20px;display:flex;flex-direction:column;gap:8px;z-index:9999}
+.toast{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:11px 16px;font-size:12px;font-weight:500;box-shadow:0 8px 30px rgba(0,0,0,.4);display:flex;align-items:center;gap:8px;min-width:220px;animation:slideIn .2s}
+.toast.ok{border-left:3px solid var(--brand)}
+.toast.error{border-left:3px solid var(--red)}
+.toast.warn{border-left:3px solid var(--yellow)}
+@keyframes slideIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+.empty{padding:48px 20px;text-align:center;color:var(--muted2);display:flex;flex-direction:column;align-items:center;gap:10px}
+.empty-icon{font-size:36px;opacity:.5}
+.empty-title{font-size:14px;font-weight:600;color:var(--muted)}
+.empty-sub{font-size:12px;max-width:280px;line-height:1.5}
+.api-card{background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:10px;overflow:hidden}
+.api-card-head{padding:10px 14px;display:flex;align-items:center;gap:10px;border-bottom:1px solid var(--border)}
+.method-badge{padding:2px 7px;border-radius:4px;font-size:10px;font-weight:800;letter-spacing:.04em;font-family:var(--mono);flex-shrink:0}
+.method-GET{background:#0f3a24;color:#3ECF8E}
+.method-POST{background:#0f2040;color:#79b8ff}
+.method-PATCH{background:#3a2a00;color:#f5a623}
+.method-DELETE{background:#3b1219;color:#e5484d}
+.api-path{font-family:var(--mono);font-size:12px;color:var(--text)}
+.api-card-body{padding:10px 14px;font-size:12px;color:var(--muted)}
+.schema-col{display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid var(--border);font-size:11px}
+.schema-col:last-child{border-bottom:none}
+.col-type{background:var(--surface3);border-radius:4px;padding:2px 7px;font-family:var(--mono);font-size:10px;color:var(--muted)}
+.col-pk{background:#0f2040;color:#79b8ff;border-radius:4px;padding:2px 5px;font-size:9px;font-weight:700}
+.settings-group{margin-bottom:24px}
+.settings-title{font-size:14px;font-weight:700;margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid var(--border)}
+.settings-row{display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--border);gap:12px}
+.settings-row:last-child{border-bottom:none}
+.settings-key{font-size:12px;font-weight:600;flex-shrink:0}
+.breadcrumb{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--muted);margin-bottom:2px}
+.breadcrumb span{color:var(--muted2)}
+.spinner{display:inline-block;width:16px;height:16px;border:2px solid var(--border2);border-top-color:var(--brand);border-radius:50%;animation:spin .6s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.row-num{color:var(--muted2);font-size:10px;user-select:none;text-align:right;padding-right:8px!important;min-width:36px}
+.connect-tabs{display:flex;gap:0;border-bottom:1px solid var(--border);margin-bottom:14px}
+.connect-tab{padding:8px 14px;font-size:12px;font-weight:500;cursor:pointer;color:var(--muted);border-bottom:2px solid transparent;margin-bottom:-1px;transition:.12s}
+.connect-tab.active{color:var(--brand);border-bottom-color:var(--brand)}
 </style>
 </head>
 <body>
+
+<div class="topbar">
+  <div class="topbar-logo">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M13 3L4 14h9l-2 7 9-11h-9l2-7z" fill="#3ECF8E"/></svg>
+    SupaForge
+  </div>
+  <div class="topbar-project">
+    <svg width="13" height="13" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6" stroke="currentColor" stroke-width="1.5"/><path d="M8 5v3l2 2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+    Project: <span id="proj-name">My Project</span>
+  </div>
+  <div class="topbar-right">
+    <span id="conn-status" class="badge badge-yellow">⬤ Not connected</span>
+    <button class="btn btn-outline btn-sm" onclick="showConnectModal()">Connection</button>
+  </div>
+</div>
+
 <div class="layout">
   <aside class="sidebar">
-    <div class="brand"><div class="logo">E</div><div><h1>Engine Console</h1><p>GitHub SQLite backend</p></div></div>
-    <nav class="nav" id="nav"></nav>
-    <div class="key-card">
-      <label class="label">API key</label>
-      <input id="apiKey" type="password" placeholder="x-api-key" />
-      <button class="primary" onclick="saveKey()">Connect / Refresh</button>
-      <button class="ghost" onclick="logout()">Clear key</button>
-      <span class="pill">Stored locally in this browser</span>
+    <div class="nav-section">
+      <div class="nav-item active" data-nav="overview" onclick="navigate('overview')">
+        <svg viewBox="0 0 16 16" fill="none"><rect x="2" y="2" width="5" height="5" rx="1" fill="currentColor"/><rect x="9" y="2" width="5" height="5" rx="1" fill="currentColor"/><rect x="2" y="9" width="5" height="5" rx="1" fill="currentColor"/><rect x="9" y="9" width="5" height="5" rx="1" fill="currentColor"/></svg>
+        Overview
+      </div>
+      <div class="nav-item" data-nav="editor" onclick="navigate('editor')">
+        <svg viewBox="0 0 16 16" fill="none"><rect x="2" y="2" width="12" height="12" rx="2" stroke="currentColor" stroke-width="1.5"/><path d="M5 6h6M5 10h4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+        Table Editor
+      </div>
+      <div class="nav-item" data-nav="sql" onclick="navigate('sql')">
+        <svg viewBox="0 0 16 16" fill="none"><path d="M3 4h10M3 8h7M3 12h9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+        SQL Editor
+      </div>
+    </div>
+    <div class="nav-divider"></div>
+    <div class="nav-section">
+      <div class="nav-label">Database</div>
+      <div class="nav-item" data-nav="tables" onclick="navigate('tables')">
+        <svg viewBox="0 0 16 16" fill="none"><rect x="2" y="2" width="12" height="12" rx="2" stroke="currentColor" stroke-width="1.5"/><path d="M2 6h12M6 6v8" stroke="currentColor" stroke-width="1.5"/></svg>
+        Tables
+      </div>
+    </div>
+    <div class="nav-divider"></div>
+    <div class="nav-section">
+      <div class="nav-label">Auth</div>
+      <div class="nav-item" data-nav="auth-users" onclick="navigate('auth-users')">
+        <svg viewBox="0 0 16 16" fill="none"><circle cx="8" cy="6" r="3" stroke="currentColor" stroke-width="1.5"/><path d="M2 14c0-3.314 2.686-5 6-5s6 1.686 6 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+        Users
+      </div>
+      <div class="nav-item" data-nav="auth-policies" onclick="navigate('auth-policies')">
+        <svg viewBox="0 0 16 16" fill="none"><path d="M8 2L3 5v4c0 3 2.5 5.5 5 6 2.5-.5 5-3 5-6V5L8 2z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>
+        Policies
+      </div>
+    </div>
+    <div class="nav-divider"></div>
+    <div class="nav-section">
+      <div class="nav-label">Storage</div>
+      <div class="nav-item" data-nav="storage" onclick="navigate('storage')">
+        <svg viewBox="0 0 16 16" fill="none"><ellipse cx="8" cy="5" rx="6" ry="2.5" stroke="currentColor" stroke-width="1.5"/><path d="M2 5v6c0 1.38 2.686 2.5 6 2.5S14 12.38 14 11V5" stroke="currentColor" stroke-width="1.5"/></svg>
+        Buckets
+      </div>
+    </div>
+    <div class="nav-divider"></div>
+    <div class="nav-section">
+      <div class="nav-label">Project</div>
+      <div class="nav-item" data-nav="api" onclick="navigate('api')">
+        <svg viewBox="0 0 16 16" fill="none"><path d="M4 10l-2-2 2-2M12 6l2 2-2 2M9 4l-2 8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        API Docs
+      </div>
+      <div class="nav-item" data-nav="settings" onclick="navigate('settings')">
+        <svg viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="2.5" stroke="currentColor" stroke-width="1.5"/><path d="M8 2v1M8 13v1M2 8h1M13 8h1M3.757 3.757l.707.707M11.536 11.536l.707.707M3.757 12.243l.707-.707M11.536 4.464l.707-.707" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+        Settings
+      </div>
+    </div>
+    <div class="sidebar-bottom">
+      <div class="key-input-wrap">
+        <div class="key-label">API Key (x-api-key)</div>
+        <input class="key-input" id="apiKey" type="password" placeholder="Paste your API key"/>
+        <button class="btn btn-brand btn-full" style="margin-top:4px" onclick="connect()">Connect</button>
+      </div>
     </div>
   </aside>
-  <main class="main">
-    <div class="top"><div><h2 id="pageTitle">Overview</h2><p id="pageSub">Project health, tables, API usage, policies, and SQL tools.</p></div><span id="status" class="pill warn">Not connected</span></div>
-    <section id="content"></section>
-  </main>
+  <main class="main" id="main-content"></main>
 </div>
-<div id="modalRoot"></div>
+<div id="toast-root"></div>
+<div id="modal-root"></div>
+
 <script>
-const tabs=[['overview','Overview'],['data','Table editor'],['sql','SQL editor'],['policies','Policies'],['audit','Audit logs'],['docs','API docs']];
-let apiKey=localStorage.getItem('engine_api_key')||'';let active='overview';let tables={};let health=null;let currentTable=null;let rows=[];document.getElementById('apiKey').value=apiKey;
-function nav(){document.getElementById('nav').innerHTML=tabs.map(([id,label])=>`<button class="${active===id?'active':''}" onclick="go('${id}')">${label}</button>`).join('')}
-function title(t,s){document.getElementById('pageTitle').textContent=t;document.getElementById('pageSub').textContent=s||'';nav()}
-function setStatus(text,cls='ok'){const el=document.getElementById('status');el.className='pill '+cls;el.textContent=text}
-function toast(msg,type='ok'){const el=document.createElement('div');el.className='toast '+(type==='error'?'error':'');el.textContent=msg;document.body.appendChild(el);setTimeout(()=>el.remove(),3600)}
-function saveKey(){apiKey=document.getElementById('apiKey').value.trim();localStorage.setItem('engine_api_key',apiKey);boot()}
-function logout(){localStorage.removeItem('engine_api_key');apiKey='';document.getElementById('apiKey').value='';setStatus('Not connected','warn')}
-async function api(path,opt={}){const res=await fetch(path,{...opt,headers:{'Content-Type':'application/json','x-api-key':apiKey,...(opt.headers||{})}});const data=await res.json().catch(()=>({}));if(!res.ok){const e=data.error?.message||data.error||('HTTP '+res.status);throw new Error(e)}return data}
-async function boot(){if(!apiKey)return;try{[health,{tables}]=await Promise.all([api('/api/admin/health'),api('/api/tables')]);setStatus('Connected','ok');render()}catch(e){setStatus('Connection failed','error');toast(e.message,'error');render()}}
-function go(id){active=id;render()}
-function render(){if(active==='overview')return renderOverview();if(active==='data')return renderData();if(active==='sql')return renderSql();if(active==='policies')return renderPolicies();if(active==='audit')return renderAudit();renderDocs()}
-function renderOverview(){title('Overview','Project status, storage backend, limits, and quick actions.');const names=Object.keys(tables||{});content.innerHTML=`<div class="grid"><div class="card"><div class="label">Status</div><div class="metric ${health?'ok':'warn'}">${health?'OK':'—'}</div></div><div class="card"><div class="label">Tables</div><div class="metric">${names.length}</div></div><div class="card"><div class="label">Backend</div><div class="metric" style="font-size:20px">${health?.storage||'github-sqlite'}</div></div><div class="card"><div class="label">Rate limit</div><div class="metric" style="font-size:20px">${health?.limits?.rateLimitPerMinute||120}/min</div></div></div><div style="height:16px"></div><div class="split"><div class="card"><h3>Tables</h3><div class="table-list">${names.length?names.map(n=>`<div class="table-item"><span>▤ ${esc(n)}</span><span>${(tables[n].columns||[]).length} cols</span></div>`).join(''):'<div class="empty">No tables yet.</div>'}</div></div><div class="card"><h3>Getting closer to Supabase</h3><p>Engine now has scoped keys, rate limits, audit logs, schema policies, safer identifiers, admin health checks, and a production-style dashboard shell.</p><p class="warn">Next architectural step: add a Postgres storage adapter for high write volume and joins.</p><button class="primary" onclick="go('data')">Manage data</button> <button onclick="go('docs')">View API docs</button></div></div>`}
-function tableList(){const names=Object.keys(tables||{});return `<div class="card"><div class="toolbar"><input placeholder="Search tables" oninput="filterTables(this.value)"><button class="primary" onclick="newTable()">+ Table</button></div><div class="table-list" id="tableList">${names.map(n=>`<div class="table-item ${n===currentTable?'active':''}" data-name="${esc(n).toLowerCase()}" onclick="currentTable='${esc(n)}';renderData()"><span>▤ ${esc(n)}</span><span>${(tables[n].columns||[]).length}</span></div>`).join('')||'<div class="empty">No tables.</div>'}</div></div>`}
-function filterTables(q){q=q.toLowerCase();document.querySelectorAll('#tableList .table-item').forEach(el=>el.style.display=el.dataset.name.includes(q)?'flex':'none')}
-async function renderData(){title('Table editor','Browse, insert, update, delete, and create tables without writing SQL.');if(!currentTable&&Object.keys(tables||{}).length)currentTable=Object.keys(tables)[0];content.innerHTML=`<div class="split">${tableList()}<div class="card" id="dataPanel">${currentTable?'Loading…':'<div class="empty">Select or create a table.</div>'}</div></div>`;if(currentTable)await loadRows()}
-async function loadRows(){try{const out=await api('/api/tables/'+encodeURIComponent(currentTable));rows=out.data||[];const cols=tables[currentTable]?.columns||(rows[0]?Object.keys(rows[0]):[]);dataPanel.innerHTML=`<div class="toolbar"><h3 style="margin-right:auto">${esc(currentTable)} <span class="pill">${rows.length} rows</span></h3><button class="primary" onclick="addRow()">+ Row</button><button class="danger" onclick="dropTable()">Drop table</button></div>${rows.length?`<div class="table-wrap"><table><thead><tr>${cols.map(c=>`<th>${esc(c)}</th>`).join('')}<th></th></tr></thead><tbody>${rows.map((r,i)=>`<tr>${cols.map(c=>`<td><input data-i="${i}" data-c="${esc(c)}" value="${esc(r[c]??'')}"></td>`).join('')}<td><button onclick="saveRow(${i})">Save</button> <button class="danger" onclick="deleteRow(${i})">Delete</button></td></tr>`).join('')}</tbody></table></div>`:'<div class="empty">No rows yet.</div>'}`;}catch(e){dataPanel.innerHTML='<div class="empty error">'+esc(e.message)+'</div>'}}
-async function saveRow(i){const id=rows[i].id;if(id===undefined)return toast('Need an id column to update rows.','error');const body={};document.querySelectorAll(`[data-i="${i}"]`).forEach(x=>body[x.dataset.c]=x.value);try{await api('/api/tables/'+encodeURIComponent(currentTable)+'?id=eq.'+encodeURIComponent(id),{method:'PUT',body:JSON.stringify(body)});toast('Row saved');loadRows()}catch(e){toast(e.message,'error')}}
-async function deleteRow(i){const id=rows[i].id;if(id===undefined)return toast('Need an id column to delete rows.','error');if(!confirm('Delete row '+id+'?'))return;try{await api('/api/tables/'+encodeURIComponent(currentTable)+'?id=eq.'+encodeURIComponent(id),{method:'DELETE'});toast('Row deleted');loadRows()}catch(e){toast(e.message,'error')}}
-async function dropTable(){if(!confirm('Drop table '+currentTable+'?'))return;try{await api('/api/query',{method:'POST',body:JSON.stringify({sql:'DROP TABLE '+currentTable})});toast('Table dropped');currentTable=null;await boot()}catch(e){toast(e.message,'error')}}
-function addRow(){const cols=(tables[currentTable]?.columns||[]).filter(c=>c!=='id');modalRoot.innerHTML=`<div class="modal"><div class="modal-box"><h3>Insert row</h3><div class="fields">${cols.map(c=>`<label>${esc(c)}<input data-col="${esc(c)}"></label>`).join('')}</div><button class="primary" onclick="submitRow()">Insert</button> <button onclick="modalRoot.innerHTML=''">Cancel</button></div></div>`}
-async function submitRow(){const body={};document.querySelectorAll('[data-col]').forEach(x=>{if(x.value!=='')body[x.dataset.col]=x.value});try{await api('/api/tables/'+encodeURIComponent(currentTable),{method:'POST',body:JSON.stringify(body)});modalRoot.innerHTML='';toast('Inserted');loadRows()}catch(e){toast(e.message,'error')}}
-let colN=0;function newTable(){colN=0;modalRoot.innerHTML=`<div class="modal"><div class="modal-box"><h3>New table</h3><input id="nt" placeholder="table_name"><div class="cols" id="cols"></div><button onclick="col()">+ Column</button><hr><button class="primary" onclick="submitTable()">Create</button> <button onclick="modalRoot.innerHTML=''">Cancel</button></div></div>`;col('id','INTEGER',true);col('name','TEXT',false)}
-function col(n='',t='TEXT',pk=false){const id='c'+colN++;cols.insertAdjacentHTML('beforeend',`<div class="col-row" id="${id}"><input placeholder="column" value="${esc(n)}"><select><option ${t==='TEXT'?'selected':''}>TEXT</option><option ${t==='INTEGER'?'selected':''}>INTEGER</option><option>REAL</option><option>NUMERIC</option><option>BLOB</option></select><label><input type="checkbox" ${pk?'checked':''}> PK</label><label><input type="checkbox"> Not null</label><button onclick="${id}.remove()">×</button></div>`)}
-async function submitTable(){const name=nt.value.trim();const defs=[...document.querySelectorAll('.col-row')].map(r=>{const [i,s]=r.querySelectorAll('input,select');let d=i.value.trim()+' '+s.value;if(r.querySelectorAll('input')[1].checked)d+=' PRIMARY KEY'+(s.value==='INTEGER'?' AUTOINCREMENT':'');if(r.querySelectorAll('input')[2].checked)d+=' NOT NULL';return d});try{await api('/api/query',{method:'POST',body:JSON.stringify({sql:`CREATE TABLE ${name} (${defs.join(', ')})`})});modalRoot.innerHTML='';toast('Table created');currentTable=name;await boot();active='data';render()}catch(e){toast(e.message,'error')}}
-function renderSql(){title('SQL editor','Admin-only raw SQL. Prefer table editor or REST endpoints for public clients.');content.innerHTML=`<div class="card"><textarea id="sql" placeholder="SELECT * FROM users"></textarea><div class="toolbar"><button class="primary" onclick="runSql()">Run query</button><button onclick="sql.value='CREATE TABLE users (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, email TEXT)'">Example CREATE</button></div><div class="result" id="result">Results appear here.</div></div>`}
-async function runSql(){result.textContent='Running…';try{const out=await api('/api/query',{method:'POST',body:JSON.stringify({sql:sql.value})});result.textContent=JSON.stringify(out,null,2);await boot()}catch(e){result.textContent=e.message;toast(e.message,'error')}}
-async function renderPolicies(){title('Policies','Configure allowed roles for each table operation.');content.innerHTML='<div class="card">Loading…</div>';try{const out=await api('/api/admin/policies');const names=Object.keys(out.tables||{});content.innerHTML=`<div class="card"><p class="warn">Policy enforcement is role based. Current keys normally run as admin/service unless API_KEYS roles are configured.</p><div class="table-wrap"><table><thead><tr><th>Table</th><th>Select</th><th>Insert</th><th>Update</th><th>Delete</th></tr></thead><tbody>${names.map(n=>{const p=out.tables[n].policies||{};return `<tr><td>${esc(n)}</td>${['select','insert','update','delete'].map(op=>`<td><input id="${op}-${esc(n)}" value="${esc((p[op]?.roles||[]).join(','))}"></td>`).join('')}</tr>`}).join('')}</tbody></table></div><br><button class="primary" onclick="savePolicies()">Save visible policy edits</button></div>`}catch(e){content.innerHTML='<div class="empty error">'+esc(e.message)+'</div>'}}
-async function savePolicies(){try{for(const name of Object.keys(tables)){const policies={};for(const op of ['select','insert','update','delete']){const el=document.getElementById(op+'-'+name);if(el)policies[op]={roles:el.value.split(',').map(x=>x.trim()).filter(Boolean)}}if(Object.keys(policies).length)await api('/api/admin/policies',{method:'PUT',body:JSON.stringify({table:name,policies})})}toast('Policies saved')}catch(e){toast(e.message,'error')}}
-async function renderAudit(){title('Audit logs','Recent in-memory events for this server instance.');content.innerHTML='<div class="card">Loading…</div>';try{const out=await api('/api/admin/audit');content.innerHTML=`<div class="card"><div class="table-wrap"><table><thead><tr><th>Time</th><th>Action</th><th>Table</th><th>Status</th><th>Path</th></tr></thead><tbody>${(out.events||[]).map(e=>`<tr><td>${esc(e.at)}</td><td>${esc(e.action||'')}</td><td>${esc(e.table||'')}</td><td>${esc(e.status||'')}</td><td>${esc(e.path||'')}</td></tr>`).join('')}</tbody></table></div></div>`}catch(e){content.innerHTML='<div class="empty error">'+esc(e.message)+'</div>'}}
-function renderDocs(){title('API docs','Windows CMD examples use x-api-key: Testplay.');content.innerHTML=`<div class="card"><h3>Windows CMD quickstart</h3><div class="result">curl -H "x-api-key: Testplay" https://your-project.vercel.app/api/init\n\ncurl -X POST https://your-project.vercel.app/api/query ^\n  -H "Content-Type: application/json" ^\n  -H "x-api-key: Testplay" ^\n  -d "{\"sql\":\"CREATE TABLE users (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, email TEXT)\"}"\n\ncurl -X POST https://your-project.vercel.app/api/tables/users ^\n  -H "Content-Type: application/json" ^\n  -H "x-api-key: Testplay" ^\n  -d "{\"name\":\"Asha\",\"email\":\"asha@example.com\"}"\n\ncurl -H "x-api-key: Testplay" "https://your-project.vercel.app/api/tables/users?order=id.desc&limit=10"</div><h3>Environment keys</h3><p><code>API_KEY=Testplay</code> keeps legacy admin mode. <code>API_KEYS=name:key:role,name2:key2:role</code> adds scoped keys.</p></div>`}
-function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
-nav();render();boot();
+// ── State ──
+let apiKey = localStorage.getItem('sf_apikey') || '';
+let currentNav = 'overview';
+let tables = {};
+let health = null;
+let activeTable = null;
+let tableRows = [];
+let activeBucket = null;
+let buckets = [];
+let bucketObjects = [];
+let authUsers = [];
+let sqlHistory = JSON.parse(localStorage.getItem('sf_sql_history') || '[]');
+
+document.getElementById('apiKey').value = apiKey;
+
+// ── API ──
+async function api(path, opts = {}) {
+  const headers = { 'Content-Type': 'application/json', 'x-api-key': apiKey, ...(opts.headers || {}) };
+  const res = await fetch(path, { ...opts, headers });
+  const ct = res.headers.get('content-type') || '';
+  const data = ct.includes('json') ? await res.json().catch(() => ({})) : await res.text();
+  if (!res.ok) {
+    const msg = typeof data === 'string' ? data : (data?.error?.message || data?.message || data?.error || `HTTP ${res.status}`);
+    throw Object.assign(new Error(msg), { status: res.status });
+  }
+  return data;
+}
+
+// ── Toast ──
+function toast(msg, type = 'ok') {
+  const el = document.createElement('div');
+  el.className = `toast ${type}`;
+  el.textContent = type === 'ok' ? '✓ ' + msg : type === 'error' ? '✗ ' + msg : '⚠ ' + msg;
+  document.getElementById('toast-root').appendChild(el);
+  setTimeout(() => el.remove(), 3500);
+}
+
+// ── Modal ──
+function closeModal() { document.getElementById('modal-root').innerHTML = ''; }
+function showModal(html) { document.getElementById('modal-root').innerHTML = `<div class="overlay" onclick="if(event.target===this)closeModal()">${html}</div>`; }
+
+// ── Navigation ──
+function navigate(nav) {
+  currentNav = nav;
+  document.querySelectorAll('.nav-item').forEach(el => el.classList.toggle('active', el.dataset.nav === nav));
+  if (nav !== 'storage') activeBucket = null;
+  render();
+}
+
+function render() {
+  const map = { overview: renderOverview, editor: renderEditor, sql: renderSQL, tables: renderTablesPage, 'auth-users': renderAuthUsers, 'auth-policies': renderPolicies, storage: renderStorage, api: renderAPI, settings: renderSettings };
+  (map[currentNav] || renderOverview)();
+}
+
+function setMain(html) { document.getElementById('main-content').innerHTML = html; }
+
+// ── Connect ──
+async function connect() {
+  apiKey = document.getElementById('apiKey').value.trim();
+  localStorage.setItem('sf_apikey', apiKey);
+  await boot();
+}
+
+async function boot() {
+  if (!apiKey) return;
+  try {
+    [health, { tables }] = await Promise.all([api('/api/admin/health'), api('/api/tables')]);
+    const s = document.getElementById('conn-status');
+    s.className = 'badge badge-green'; s.textContent = '⬤ Connected';
+    toast('Connected');
+  } catch (e) {
+    const s = document.getElementById('conn-status');
+    s.className = 'badge badge-red'; s.textContent = '⬤ Error';
+    toast(e.message, 'error');
+  }
+  render();
+}
+
+// ── Overview ──
+function renderOverview() {
+  const tNames = Object.keys(tables || {});
+  const origin = location.origin;
+  setMain(`
+<div class="page-header">
+  <div><div class="page-title">Overview</div><div class="page-sub">SupaForge — Drop-in Supabase alternative with GitHub storage</div></div>
+  <button class="btn btn-brand btn-sm" onclick="showConnectModal()">📋 Get Connection String</button>
+</div>
+<div class="page-body">
+  <div class="grid-4" style="margin-bottom:16px">
+    <div class="card"><div class="metric-val">${tNames.length}</div><div class="metric-label">Tables</div></div>
+    <div class="card"><div class="metric-val" style="font-size:18px;color:${health?.status==='ok'?'var(--brand)':'var(--muted)'}">${health?.status==='ok'?'✓ Healthy':'—'}</div><div class="metric-label">Status</div></div>
+    <div class="card"><div class="metric-val" style="font-size:16px">GitHub</div><div class="metric-label">Storage</div></div>
+    <div class="card"><div class="metric-val" style="font-size:18px">${health?.limits?.rateLimitPerMinute||120}</div><div class="metric-label">Req/min limit</div></div>
+  </div>
+  <div class="grid-2" style="margin-bottom:16px">
+    <div class="card">
+      <div class="card-header"><div class="card-title">Quick Start</div></div>
+      <div style="margin-bottom:10px"><div style="font-size:10px;font-weight:600;color:var(--muted2);text-transform:uppercase;letter-spacing:.04em;margin-bottom:5px">Project URL</div>
+      <div class="code-block" style="padding:8px 10px;font-size:11px;cursor:pointer" onclick="navigator.clipboard.writeText('${origin}').then(()=>toast('Copied!'))">${origin}</div></div>
+      <div style="font-size:10px;font-weight:600;color:var(--muted2);text-transform:uppercase;letter-spacing:.04em;margin-bottom:5px">supabase-js (drop-in replacement)</div>
+      <div class="code-block">import { createClient } from '@supabase/supabase-js'
+
+const supabase = createClient(
+  '${origin}',
+  'YOUR_API_KEY'  // from Settings
+)
+
+// Works exactly like Supabase!
+const { data } = await supabase
+  .from('users').select('*').limit(10)</div>
+    </div>
+    <div class="card">
+      <div class="card-header"><div class="card-title">Your Tables <span class="badge badge-green" style="font-size:10px">${tNames.length}</span></div><button class="btn btn-brand btn-sm" onclick="navigate('editor')">Open Editor →</button></div>
+      ${tNames.length ? tNames.map(n => `<div class="table-list-item" onclick="activeTable='${n}';navigate('editor')"><svg viewBox="0 0 16 16" fill="none" width="13" height="13"><rect x="2" y="2" width="12" height="12" rx="2" stroke="currentColor" stroke-width="1.5"/><path d="M2 6h12M6 6v8" stroke="currentColor" stroke-width="1.5"/></svg>${esc(n)}<span style="margin-left:auto;color:var(--muted2);font-size:10px">${(tables[n].columns||[]).length} cols</span></div>`).join('')
+      : `<div class="empty" style="padding:24px"><div class="empty-icon">🗄️</div><div class="empty-title">No tables yet</div><div class="empty-sub">Create your first table in the SQL editor</div><button class="btn btn-brand btn-sm" style="margin-top:8px" onclick="navigate('sql')">Open SQL Editor</button></div>`}
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-header"><div class="card-title">⚡ Feature Parity with Supabase</div></div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px">
+      ${[['✅','PostgREST API','/rest/v1/ — same query syntax'],['✅','Auth API','/auth/v1/ — JWT sign-up/sign-in'],['✅','Storage API','/storage/v1/ — bucket file management'],['✅','Row Policies','Role-based access control per table'],['✅','Table Editor','Visual data management'],['✅','SQL Editor','Raw SQL execution'],['✅','AES-256 Encryption','Data encrypted at rest in GitHub'],['✅','Audit Logs','Every API call logged'],['✅','Vercel Deploy','Zero-config serverless deployment']].map(([i,n,d])=>
+        `<div style="display:flex;gap:8px;padding:10px;background:var(--surface2);border-radius:6px"><span style="flex-shrink:0">${i}</span><div><div style="font-weight:600;font-size:12px">${n}</div><div style="color:var(--muted);font-size:11px;margin-top:2px">${d}</div></div></div>`
+      ).join('')}
+    </div>
+  </div>
+</div>`);
+}
+
+// ── Table Editor ──
+function renderEditor() {
+  const tNames = Object.keys(tables || {});
+  if (!activeTable && tNames.length) activeTable = tNames[0];
+  setMain(`
+<div class="page-header">
+  <div><div class="page-title">Table Editor</div></div>
+  <div style="display:flex;gap:8px">
+    <button class="btn btn-outline btn-sm" onclick="showNewTableModal()">+ New table</button>
+    ${activeTable ? `<button class="btn btn-danger btn-sm" onclick="dropTableConfirm()">Drop "${esc(activeTable)}"</button>` : ''}
+  </div>
+</div>
+<div class="split">
+  <div class="split-left">
+    <div class="pane-header">
+      <span class="pane-header-title">Tables (${tNames.length})</span>
+      <button class="btn btn-ghost btn-sm" onclick="showNewTableModal()" style="padding:2px 6px;font-size:16px">+</button>
+    </div>
+    <div class="pane-body">
+      ${tNames.map(n => `<div class="table-list-item ${n===activeTable?'active':''}" onclick="selectTable('${esc(n)}')">
+        <svg viewBox="0 0 16 16" fill="none" width="13" height="13"><rect x="2" y="2" width="12" height="12" rx="2" stroke="currentColor" stroke-width="1.5"/><path d="M2 6h12M6 6v8" stroke="currentColor" stroke-width="1.5"/></svg>
+        ${esc(n)}<span style="margin-left:auto;color:var(--muted2);font-size:10px">${(tables[n]?.columns||[]).length}</span>
+      </div>`).join('') || '<div style="padding:16px;font-size:12px;color:var(--muted2)">No tables yet</div>'}
+    </div>
+  </div>
+  <div class="split-right" id="table-data-pane">
+    ${activeTable ? '<div style="padding:20px;display:flex;align-items:center;gap:10px;color:var(--muted)"><div class="spinner"></div> Loading…</div>'
+    : `<div class="empty"><div class="empty-icon">📋</div><div class="empty-title">Select a table</div><div class="empty-sub">Or create one with "+ New table"</div></div>`}
+  </div>
+</div>`);
+  if (activeTable) loadTableData(activeTable);
+}
+
+async function selectTable(name) { activeTable = name; renderEditor(); }
+
+async function loadTableData(table) {
+  try {
+    const data = await api(`/api/tables/${encodeURIComponent(table)}?limit=200`);
+    tableRows = data.data || [];
+    const cols = tables[table]?.columns || (tableRows[0] ? Object.keys(tableRows[0]) : []);
+    const pane = document.getElementById('table-data-pane');
+    if (!pane) return;
+    pane.innerHTML = `
+<div class="toolbar">
+  <span style="font-size:13px;font-weight:700">${esc(table)}</span>
+  <span class="badge badge-green" style="font-size:10px">${tableRows.length} rows</span>
+  <span style="flex:1"></span>
+  <button class="btn btn-outline btn-sm" onclick="refreshTableData()">↻ Refresh</button>
+  <button class="btn btn-brand btn-sm" onclick="showInsertRowModal()">+ Insert row</button>
+</div>
+<div class="data-grid">
+  <table>
+    <thead><tr>
+      <th class="row-num">#</th>
+      ${cols.map(c=>`<th>${esc(c)}</th>`).join('')}
+      <th style="width:90px"></th>
+    </tr></thead>
+    <tbody>
+      ${tableRows.length ? tableRows.map((row,i)=>`<tr>
+        <td class="row-num">${i+1}</td>
+        ${cols.map(c=>`<td title="${esc(String(row[c]??''))}">${row[c]===null||row[c]===undefined?'<span class="null-val">NULL</span>':esc(String(row[c]))}</td>`).join('')}
+        <td><div class="row-actions">
+          <button class="btn btn-ghost btn-sm" onclick="showEditRowModal(${i})" style="padding:3px 7px;font-size:10px">Edit</button>
+          <button class="btn btn-danger btn-sm" onclick="deleteRowById(${i})" style="padding:3px 7px;font-size:10px">Del</button>
+        </div></td>
+      </tr>`).join('')
+      : `<tr><td colspan="${cols.length+2}" style="padding:40px;text-align:center;color:var(--muted2)">No rows yet — insert one to get started</td></tr>`}
+    </tbody>
+  </table>
+</div>`;
+  } catch(e) {
+    const pane = document.getElementById('table-data-pane');
+    if (pane) pane.innerHTML = `<div class="empty"><div class="empty-icon">⚠️</div><div class="empty-title">Error</div><div class="empty-sub">${esc(e.message)}</div></div>`;
+    toast(e.message, 'error');
+  }
+}
+
+function refreshTableData() { if (activeTable) loadTableData(activeTable); }
+
+function showInsertRowModal() {
+  const cols = (tables[activeTable]?.columns || []).filter(c => c !== 'id');
+  showModal(`<div class="modal">
+    <div class="modal-title">Insert Row into <span style="color:var(--brand)">${esc(activeTable)}</span></div>
+    ${cols.length ? cols.map(c=>`<div class="field"><label>${esc(c)}</label><input id="ins_${esc(c)}" placeholder="${esc(c)}"/></div>`).join('')
+    : `<div class="field"><label>JSON body</label><textarea id="ins_json" rows="4" placeholder='{"name":"Alice","email":"alice@example.com"}'></textarea></div>`}
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModal()">Cancel</button>
+      <button class="btn btn-brand" onclick="submitInsert()">Insert Row</button>
+    </div>
+  </div>`);
+}
+
+async function submitInsert() {
+  const cols = (tables[activeTable]?.columns || []).filter(c => c !== 'id');
+  let body;
+  if (!cols.length) {
+    try { body = JSON.parse(document.getElementById('ins_json')?.value); } catch { toast('Invalid JSON', 'error'); return; }
+  } else {
+    body = {};
+    cols.forEach(c => { const v = document.getElementById(`ins_${c}`)?.value; if (v !== '') body[c] = v; });
+  }
+  try {
+    await api(`/api/tables/${encodeURIComponent(activeTable)}`, { method: 'POST', body: JSON.stringify(body) });
+    closeModal(); toast('Row inserted'); loadTableData(activeTable);
+  } catch(e) { toast(e.message, 'error'); }
+}
+
+function showEditRowModal(idx) {
+  const row = tableRows[idx];
+  const cols = Object.keys(row);
+  showModal(`<div class="modal">
+    <div class="modal-title">Edit Row</div>
+    ${cols.map(c=>`<div class="field"><label>${esc(c)}</label><input id="edit_${esc(c)}" value="${esc(String(row[c]??''))}"/></div>`).join('')}
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModal()">Cancel</button>
+      <button class="btn btn-brand" onclick="submitEdit(${idx})">Save Changes</button>
+    </div>
+  </div>`);
+}
+
+async function submitEdit(idx) {
+  const row = tableRows[idx];
+  const id = row.id;
+  if (id === undefined) { toast('Row needs an id column', 'warn'); return; }
+  const body = {};
+  Object.keys(row).forEach(c => { const el = document.getElementById(`edit_${c}`); if (el) body[c] = el.value; });
+  try {
+    await api(`/api/tables/${encodeURIComponent(activeTable)}?id=eq.${encodeURIComponent(id)}`, { method: 'PUT', body: JSON.stringify(body) });
+    closeModal(); toast('Row saved'); loadTableData(activeTable);
+  } catch(e) { toast(e.message, 'error'); }
+}
+
+async function deleteRowById(idx) {
+  const row = tableRows[idx];
+  const id = row.id;
+  if (id === undefined) { toast('Row needs an id column to delete', 'warn'); return; }
+  if (!confirm(`Delete row id=${id}?`)) return;
+  try {
+    await api(`/api/tables/${encodeURIComponent(activeTable)}?id=eq.${encodeURIComponent(id)}`, { method: 'DELETE' });
+    toast('Row deleted'); loadTableData(activeTable);
+  } catch(e) { toast(e.message, 'error'); }
+}
+
+async function dropTableConfirm() {
+  if (!confirm(`Drop table "${activeTable}"? This cannot be undone.`)) return;
+  try {
+    await api('/api/query', { method: 'POST', body: JSON.stringify({ sql: `DROP TABLE ${activeTable}` }) });
+    toast('Table dropped'); activeTable = null;
+    const res = await api('/api/tables'); tables = res.tables || {};
+    renderEditor();
+  } catch(e) { toast(e.message, 'error'); }
+}
+
+let _colCount = 0;
+function showNewTableModal() {
+  _colCount = 2;
+  showModal(`<div class="modal" style="width:min(600px,100%)">
+    <div class="modal-title">Create New Table</div>
+    <div class="field"><label>Table name</label><input id="new-table-name" placeholder="e.g. users, products, posts"/></div>
+    <div style="font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;margin-top:4px">Columns</div>
+    <div id="col-list" style="display:flex;flex-direction:column;gap:6px">
+      <div style="display:flex;gap:6px;align-items:center" id="col-0">
+        <input value="id" style="background:var(--surface2);border:1px solid var(--border);border-radius:5px;padding:6px 8px;color:var(--text);font-size:12px;flex:1"/>
+        <select style="background:var(--surface2);border:1px solid var(--border);border-radius:5px;padding:6px 8px;color:var(--text);font-size:12px;width:120px"><option>INTEGER</option><option>TEXT</option><option>REAL</option><option>NUMERIC</option><option>BLOB</option></select>
+        <span class="col-pk">PK AUTO</span>
+      </div>
+      <div style="display:flex;gap:6px;align-items:center" id="col-1">
+        <input value="name" style="background:var(--surface2);border:1px solid var(--border);border-radius:5px;padding:6px 8px;color:var(--text);font-size:12px;flex:1"/>
+        <select style="background:var(--surface2);border:1px solid var(--border);border-radius:5px;padding:6px 8px;color:var(--text);font-size:12px;width:120px"><option>TEXT</option><option>INTEGER</option><option>REAL</option><option>NUMERIC</option><option>BLOB</option></select>
+        <button onclick="document.getElementById('col-1').remove()" style="background:transparent;color:var(--muted);font-size:16px;border:none;cursor:pointer;flex-shrink:0">×</button>
+      </div>
+    </div>
+    <button class="btn btn-outline btn-sm" onclick="addColRow()" style="align-self:flex-start">+ Add column</button>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModal()">Cancel</button>
+      <button class="btn btn-brand" onclick="submitNewTable()">Create Table</button>
+    </div>
+  </div>`);
+}
+
+function addColRow() {
+  const id = 'col-' + (_colCount++);
+  const list = document.getElementById('col-list');
+  const div = document.createElement('div');
+  div.style.cssText = 'display:flex;gap:6px;align-items:center';
+  div.id = id;
+  div.innerHTML = `<input placeholder="column_name" style="background:var(--surface2);border:1px solid var(--border);border-radius:5px;padding:6px 8px;color:var(--text);font-size:12px;flex:1"/>
+    <select style="background:var(--surface2);border:1px solid var(--border);border-radius:5px;padding:6px 8px;color:var(--text);font-size:12px;width:120px"><option>TEXT</option><option>INTEGER</option><option>REAL</option><option>NUMERIC</option><option>BLOB</option></select>
+    <button onclick="document.getElementById('${id}').remove()" style="background:transparent;color:var(--muted);font-size:16px;border:none;cursor:pointer;flex-shrink:0">×</button>`;
+  list.appendChild(div);
+}
+
+async function submitNewTable() {
+  const name = document.getElementById('new-table-name').value.trim();
+  if (!name) { toast('Table name required', 'warn'); return; }
+  const rows = document.querySelectorAll('#col-list > div');
+  const defs = [];
+  rows.forEach((row, i) => {
+    const [inp, sel] = row.querySelectorAll('input, select');
+    if (!inp?.value?.trim()) return;
+    let def = `${inp.value.trim()} ${sel?.value || 'TEXT'}`;
+    if (i === 0) def += ' PRIMARY KEY AUTOINCREMENT';
+    defs.push(def);
+  });
+  if (!defs.length) { toast('Add at least one column', 'warn'); return; }
+  try {
+    await api('/api/query', { method: 'POST', body: JSON.stringify({ sql: `CREATE TABLE ${name} (${defs.join(', ')})` }) });
+    closeModal(); toast('Table created');
+    const res = await api('/api/tables'); tables = res.tables || {};
+    activeTable = name; navigate('editor');
+  } catch(e) { toast(e.message, 'error'); }
+}
+
+// ── SQL Editor ──
+function renderSQL() {
+  const tNames = Object.keys(tables || {});
+  setMain(`
+<div class="page-header">
+  <div><div class="page-title">SQL Editor</div><div class="page-sub">Run queries against your SQLite tables</div></div>
+</div>
+<div class="page-body" style="display:flex;gap:14px;flex:1;overflow:hidden;padding-bottom:0">
+  <div style="flex:1;display:flex;flex-direction:column;gap:10px;overflow:hidden">
+    <textarea id="sql-input" class="sql-textarea" rows="9" placeholder="-- Write your SQL here
+SELECT * FROM users LIMIT 10
+
+-- Create a table
+CREATE TABLE posts (id INTEGER PRIMARY KEY AUTOINCREMENT, title TEXT, body TEXT, created_at TEXT)
+
+-- Insert a row
+INSERT INTO users (name, email) VALUES ('Alice', 'alice@example.com')">${esc(sqlHistory[0]||'')}</textarea>
+    <div style="display:flex;gap:8px;align-items:center;flex-shrink:0">
+      <button class="btn btn-brand" onclick="runSQL()">▶ Run</button>
+      <button class="btn btn-outline btn-sm" onclick="document.getElementById('sql-input').value=''">Clear</button>
+      <span id="sql-status" style="font-size:11px;color:var(--muted)"></span>
+    </div>
+    <div id="sql-result" class="sql-result" style="flex:1;overflow:auto"><div class="sql-msg">Results appear here</div></div>
+  </div>
+  <div style="width:200px;flex-shrink:0;display:flex;flex-direction:column;gap:12px">
+    <div>
+      <div style="font-size:10px;font-weight:700;color:var(--muted2);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px">Tables</div>
+      <div style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden">
+        ${tNames.map(t=>`<div style="padding:7px 12px;font-size:11px;cursor:pointer;color:var(--muted);border-bottom:1px solid var(--border);transition:.1s" onmouseover="this.style.color='var(--text)'" onmouseout="this.style.color='var(--muted)'" onclick="document.getElementById('sql-input').value='SELECT * FROM ${esc(t)} LIMIT 50'">▤ ${esc(t)}</div>`).join('')||'<div style="padding:10px;font-size:11px;color:var(--muted2)">No tables</div>'}
+      </div>
+    </div>
+    <div>
+      <div style="font-size:10px;font-weight:700;color:var(--muted2);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px">History</div>
+      <div style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;max-height:200px;overflow-y:auto">
+        ${sqlHistory.slice(0,8).map((q,i)=>`<div style="padding:7px 12px;font-size:10px;cursor:pointer;color:var(--muted);border-bottom:1px solid var(--border);font-family:var(--mono);white-space:nowrap;overflow:hidden;text-overflow:ellipsis" onclick="document.getElementById('sql-input').value=sqlHistory[${i}]" title="${esc(q)}">${esc(q.slice(0,50))}${q.length>50?'…':''}</div>`).join('')||'<div style="padding:10px;font-size:11px;color:var(--muted2)">No history</div>'}
+      </div>
+    </div>
+  </div>
+</div>`);
+}
+
+async function runSQL() {
+  const sql = document.getElementById('sql-input')?.value?.trim();
+  if (!sql) return;
+  const statusEl = document.getElementById('sql-status');
+  const resultEl = document.getElementById('sql-result');
+  if (statusEl) statusEl.textContent = 'Running…';
+  if (resultEl) resultEl.innerHTML = '<div class="sql-msg"><div class="spinner" style="display:inline-block"></div> Running…</div>';
+  const t0 = Date.now();
+  try {
+    const out = await api('/api/query', { method: 'POST', body: JSON.stringify({ sql }) });
+    const ms = Date.now() - t0;
+    sqlHistory = [sql, ...sqlHistory.filter(q=>q!==sql)].slice(0, 20);
+    localStorage.setItem('sf_sql_history', JSON.stringify(sqlHistory));
+    if (statusEl) statusEl.textContent = `${ms}ms`;
+    const res2 = await api('/api/tables'); tables = res2.tables || {};
+    if (out.rows?.length > 0) {
+      const cols = Object.keys(out.rows[0]);
+      resultEl.innerHTML = `<table class="sql-result-table">
+        <thead><tr>${cols.map(c=>`<th>${esc(c)}</th>`).join('')}</tr></thead>
+        <tbody>${out.rows.map(r=>`<tr>${cols.map(c=>`<td>${r[c]===null?'<span style="color:var(--muted2)">NULL</span>':esc(String(r[c]))}</td>`).join('')}</tr>`).join('')}</tbody>
+      </table>`;
+    } else {
+      resultEl.innerHTML = `<div class="sql-msg" style="color:var(--brand)">✓ ${out.type||'Query'} completed${out.table?' on '+out.table:''}.</div>`;
+    }
+  } catch(e) {
+    if (statusEl) statusEl.textContent = `Error`;
+    resultEl.innerHTML = `<div class="sql-msg" style="color:var(--red)">✗ ${esc(e.message)}</div>`;
+  }
+}
+
+// ── Tables Page ──
+function renderTablesPage() {
+  const tNames = Object.keys(tables || {});
+  setMain(`
+<div class="page-header">
+  <div><div class="page-title">Tables</div><div class="page-sub">Schema and structure for all database tables</div></div>
+  <button class="btn btn-brand btn-sm" onclick="navigate('sql')">+ Create via SQL</button>
+</div>
+<div class="page-body">
+  ${tNames.length ? tNames.map(t => {
+    const cols = tables[t].columns || [];
+    return `<div class="card" style="margin-bottom:12px">
+      <div class="card-header">
+        <div style="display:flex;align-items:center;gap:8px">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="2" y="2" width="12" height="12" rx="2" stroke="var(--brand)" stroke-width="1.5"/><path d="M2 6h12M6 6v8" stroke="var(--brand)" stroke-width="1.5"/></svg>
+          <span style="font-size:14px;font-weight:700">${esc(t)}</span>
+          <span class="badge badge-green" style="font-size:10px">${cols.length} cols</span>
+        </div>
+        <button class="btn btn-outline btn-sm" onclick="activeTable='${esc(t)}';navigate('editor')">Browse →</button>
+      </div>
+      <div>${cols.map(c=>`<div class="schema-col"><svg width="12" height="12" viewBox="0 0 16 16" fill="none"><rect x="3" y="3" width="10" height="10" rx="2" stroke="currentColor" stroke-width="1.5"/></svg><span style="font-weight:500">${esc(c)}</span><span class="col-type">${c==='id'?'INTEGER':'TEXT'}</span>${c==='id'?'<span class="col-pk">PK</span>':''}</div>`).join('')||'<div style="font-size:12px;color:var(--muted2);padding:8px 0">No schema registered</div>'}</div>
+    </div>`;
+  }).join('') : `<div class="empty"><div class="empty-icon">🗄️</div><div class="empty-title">No tables</div><div class="empty-sub">Use the SQL Editor to create your first table</div><button class="btn btn-brand" style="margin-top:10px" onclick="navigate('sql')">Open SQL Editor</button></div>`}
+</div>`);
+}
+
+// ── Auth Users ──
+async function renderAuthUsers() {
+  setMain(`
+<div class="page-header">
+  <div><div class="page-title">Users</div><div class="page-sub">Manage application users and authentication</div></div>
+  <button class="btn btn-brand btn-sm" onclick="showAddUserModal()">+ Add user</button>
+</div>
+<div class="page-body" style="padding-top:0">
+  <div class="card" style="padding:0;overflow:hidden;margin-top:16px">
+    <div id="users-tbody"><div style="padding:24px;display:flex;gap:10px;align-items:center;color:var(--muted)"><div class="spinner"></div> Loading users…</div></div>
+  </div>
+</div>`);
+  loadAuthUsers();
+}
+
+async function loadAuthUsers() {
+  try {
+    const res = await api('/api/auth/v1/admin/users');
+    authUsers = res.users || [];
+    const el = document.getElementById('users-tbody');
+    if (!el) return;
+    if (!authUsers.length) {
+      el.innerHTML = `<div class="empty"><div class="empty-icon">👤</div><div class="empty-title">No users yet</div><div class="empty-sub">Create your first user to enable authentication</div></div>`;
+      return;
+    }
+    el.innerHTML = `<table class="users-table">
+      <thead><tr><th>User</th><th>Email</th><th>Role</th><th>Confirmed</th><th>Last Sign In</th><th>Created</th><th></th></tr></thead>
+      <tbody>${authUsers.map((u,i)=>`<tr>
+        <td><div style="display:flex;align-items:center;gap:8px"><div class="avatar">${(u.email||'?')[0].toUpperCase()}</div><code style="font-size:10px;color:var(--muted)">${esc(u.id?.slice(0,8))}…</code></div></td>
+        <td style="font-weight:500">${esc(u.email)}</td>
+        <td><span class="badge ${u.role==='admin'?'badge-yellow':'badge-green'}" style="font-size:10px">${esc(u.role||'authenticated')}</span></td>
+        <td>${u.emailConfirmedAt?'<span style="color:var(--brand)">✓ Yes</span>':'<span style="color:var(--muted2)">—</span>'}</td>
+        <td style="color:var(--muted);font-size:11px">${u.lastSignInAt?new Date(u.lastSignInAt).toLocaleDateString():'Never'}</td>
+        <td style="color:var(--muted);font-size:11px">${u.createdAt?new Date(u.createdAt).toLocaleDateString():'—'}</td>
+        <td><button class="btn btn-danger btn-sm" onclick="deleteAuthUser('${esc(u.id)}',${i})">Delete</button></td>
+      </tr>`).join('')}</tbody>
+    </table>`;
+  } catch(e) {
+    const el = document.getElementById('users-tbody');
+    if (el) el.innerHTML = `<div class="empty"><div class="empty-icon">⚠️</div><div class="empty-sub">${esc(e.message)}</div></div>`;
+    toast(e.message, 'error');
+  }
+}
+
+function showAddUserModal() {
+  showModal(`<div class="modal">
+    <div class="modal-title">Add User</div>
+    <div class="field"><label>Email</label><input id="u-email" type="email" placeholder="user@example.com"/></div>
+    <div class="field"><label>Password</label><input id="u-pass" type="password" placeholder="min 6 characters"/></div>
+    <div class="field"><label>Role</label><select id="u-role"><option value="authenticated">authenticated</option><option value="admin">admin</option><option value="service">service</option><option value="anon">anon</option></select></div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModal()">Cancel</button>
+      <button class="btn btn-brand" onclick="submitAddUser()">Create User</button>
+    </div>
+  </div>`);
+}
+
+async function submitAddUser() {
+  const email = document.getElementById('u-email').value.trim();
+  const password = document.getElementById('u-pass').value;
+  const role = document.getElementById('u-role').value;
+  if (!email || !password) { toast('Email and password required', 'warn'); return; }
+  try {
+    await api('/api/auth/v1/admin/users', { method: 'POST', body: JSON.stringify({ email, password, role }) });
+    closeModal(); toast('User created'); loadAuthUsers();
+  } catch(e) { toast(e.message, 'error'); }
+}
+
+async function deleteAuthUser(id, idx) {
+  if (!confirm(`Delete user ${authUsers[idx]?.email}?`)) return;
+  try {
+    await api(`/api/auth/v1/admin/users?id=${encodeURIComponent(id)}`, { method: 'DELETE' });
+    toast('User deleted'); loadAuthUsers();
+  } catch(e) { toast(e.message, 'error'); }
+}
+
+// ── Policies ──
+async function renderPolicies() {
+  setMain(`
+<div class="page-header">
+  <div><div class="page-title">Row-Level Policies</div><div class="page-sub">Control which roles can access each table operation</div></div>
+</div>
+<div class="page-body"><div id="policies-body"><div style="display:flex;gap:10px;align-items:center;color:var(--muted)"><div class="spinner"></div> Loading…</div></div></div>`);
+  try {
+    const res = await api('/api/admin/policies');
+    const tNames = Object.keys(res.tables || {});
+    const el = document.getElementById('policies-body');
+    if (!el) return;
+    if (!tNames.length) { el.innerHTML = `<div class="empty"><div class="empty-icon">🛡️</div><div class="empty-title">No tables</div></div>`; return; }
+    el.innerHTML = tNames.map(t => {
+      const p = res.tables[t].policies || {};
+      return `<div class="card" style="margin-bottom:12px">
+        <div class="card-header"><div style="font-size:14px;font-weight:700">▤ ${esc(t)}</div><button class="btn btn-brand btn-sm" onclick="savePolicyTable('${esc(t)}')">Save</button></div>
+        <div style="font-size:11px;color:var(--muted);margin-bottom:12px">Enter comma-separated roles: <code>admin</code>, <code>service</code>, <code>anon</code></div>
+        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px">
+          ${['select','insert','update','delete'].map(op=>`<div class="field">
+            <label>${op.toUpperCase()}</label>
+            <input id="pol-${esc(t)}-${op}" value="${esc((p[op]?.roles||[]).join(','))}" placeholder="admin,service"/>
+          </div>`).join('')}
+        </div>
+      </div>`;
+    }).join('');
+  } catch(e) { toast(e.message, 'error'); }
+}
+
+async function savePolicyTable(table) {
+  const policies = {};
+  for (const op of ['select','insert','update','delete']) {
+    const el = document.getElementById(`pol-${table}-${op}`);
+    if (el) policies[op] = { roles: el.value.split(',').map(r=>r.trim()).filter(Boolean) };
+  }
+  try {
+    await api('/api/admin/policies', { method: 'PUT', body: JSON.stringify({ table, policies }) });
+    toast(`Policies saved for ${table}`);
+  } catch(e) { toast(e.message, 'error'); }
+}
+
+// ── Storage ──
+async function renderStorage() {
+  if (activeBucket) { await renderBucketObjects(); return; }
+  setMain(`
+<div class="page-header">
+  <div><div class="page-title">Storage</div><div class="page-sub">File buckets stored securely in GitHub — AES-256 encrypted</div></div>
+  <button class="btn btn-brand btn-sm" onclick="showCreateBucketModal()">+ New bucket</button>
+</div>
+<div class="page-body"><div id="buckets-area"><div style="display:flex;gap:10px;align-items:center;color:var(--muted)"><div class="spinner"></div> Loading…</div></div></div>`);
+  await loadBuckets();
+}
+
+async function loadBuckets() {
+  try {
+    buckets = await api('/api/storage/v1/buckets');
+    const el = document.getElementById('buckets-area');
+    if (!el) return;
+    if (!Array.isArray(buckets) || !buckets.length) {
+      el.innerHTML = `<div class="empty"><div class="empty-icon">🗂️</div><div class="empty-title">No buckets yet</div><div class="empty-sub">Create a bucket to start uploading files</div><button class="btn btn-brand" style="margin-top:10px" onclick="showCreateBucketModal()">Create bucket</button></div>`;
+      return;
+    }
+    el.innerHTML = `<div class="bucket-grid">${buckets.map(b=>`
+      <div class="bucket-card" onclick="openBucket('${esc(b.id)}')">
+        <span class="bucket-badge">${b.public?'Public':'Private'}</span>
+        <div class="bucket-icon">🗂️</div>
+        <div class="bucket-name">${esc(b.name||b.id)}</div>
+        <div class="bucket-meta">${b.objectCount||0} files</div>
+        <div class="bucket-meta">${b.createdAt?new Date(b.createdAt).toLocaleDateString():''}</div>
+      </div>`).join('')}</div>`;
+  } catch(e) { toast(e.message, 'error'); }
+}
+
+function openBucket(id) { activeBucket = id; renderStorage(); }
+
+async function renderBucketObjects() {
+  const bucket = buckets.find(b=>b.id===activeBucket) || { id: activeBucket, name: activeBucket };
+  setMain(`
+<div class="page-header">
+  <div>
+    <div class="breadcrumb"><span onclick="activeBucket=null;renderStorage()" style="cursor:pointer;color:var(--brand)">Storage</span><span>›</span><span>${esc(bucket.name||activeBucket)}</span></div>
+    <div class="page-title">${esc(bucket.name||activeBucket)}</div>
+  </div>
+  <div style="display:flex;gap:8px">
+    <button class="btn btn-outline btn-sm" onclick="activeBucket=null;renderStorage()">← Back</button>
+    <button class="btn btn-brand btn-sm" onclick="showUploadModal()">↑ Upload</button>
+    <button class="btn btn-danger btn-sm" onclick="deleteBucketConfirm()">Delete bucket</button>
+  </div>
+</div>
+<div class="page-body" style="padding-top:0">
+  <div id="objects-area" style="margin-top:16px"><div style="display:flex;gap:10px;align-items:center;color:var(--muted)"><div class="spinner"></div> Loading files…</div></div>
+</div>`);
+  await loadBucketObjects();
+}
+
+async function loadBucketObjects() {
+  try {
+    const res = await api(`/api/storage/v1/objects?bucket=${encodeURIComponent(activeBucket)}&list=1`);
+    bucketObjects = Array.isArray(res) ? res : [];
+    const el = document.getElementById('objects-area');
+    if (!el) return;
+    if (!bucketObjects.length) {
+      el.innerHTML = `<div class="empty"><div class="empty-icon">📭</div><div class="empty-title">Empty bucket</div><div class="empty-sub">Upload your first file</div><button class="btn btn-brand" style="margin-top:10px" onclick="showUploadModal()">Upload file</button></div>`;
+      return;
+    }
+    el.innerHTML = `<div class="card" style="padding:0;overflow:hidden"><table class="file-list">
+      <thead><tr><th>Name</th><th>Size</th><th>Type</th><th>Modified</th><th></th></tr></thead>
+      <tbody>${bucketObjects.map(f=>`<tr>
+        <td style="display:flex;align-items:center;gap:8px"><span style="font-size:18px">${fileIcon(f.name)}</span>${esc(f.name)}</td>
+        <td style="color:var(--muted);font-size:11px">${formatBytes(f.metadata?.size||0)}</td>
+        <td style="color:var(--muted);font-size:11px;font-family:var(--mono)">${f.metadata?.mimetype||'—'}</td>
+        <td style="color:var(--muted);font-size:11px">${f.updated_at?new Date(f.updated_at).toLocaleDateString():'—'}</td>
+        <td style="display:flex;gap:6px;align-items:center">
+          <button class="btn btn-outline btn-sm" onclick="downloadFile('${esc(f.name)}')">↓ Download</button>
+          <button class="btn btn-danger btn-sm" onclick="deleteFileConfirm('${esc(f.name)}')">Delete</button>
+        </td>
+      </tr>`).join('')}
+      </tbody>
+    </table></div>`;
+  } catch(e) {
+    const el = document.getElementById('objects-area');
+    if (el) el.innerHTML = `<div class="empty"><div class="empty-icon">⚠️</div><div class="empty-sub">${esc(e.message)}</div></div>`;
+  }
+}
+
+function fileIcon(name) {
+  const ext = name.split('.').pop()?.toLowerCase();
+  if (['jpg','jpeg','png','gif','webp','svg'].includes(ext)) return '🖼️';
+  if (['pdf'].includes(ext)) return '📄';
+  if (['mp4','mov','avi','webm'].includes(ext)) return '🎬';
+  if (['mp3','wav','ogg'].includes(ext)) return '🎵';
+  if (['zip','tar','gz'].includes(ext)) return '📦';
+  if (['json','csv','xml'].includes(ext)) return '📊';
+  if (['js','ts','py','rb','go'].includes(ext)) return '💻';
+  return '📄';
+}
+
+function showCreateBucketModal() {
+  showModal(`<div class="modal">
+    <div class="modal-title">Create Storage Bucket</div>
+    <div class="field"><label>Bucket ID</label><input id="bkt-id" placeholder="my-bucket"/><div class="field-hint">Lowercase, no spaces (e.g. user-uploads)</div></div>
+    <div class="field"><label>Display Name</label><input id="bkt-name" placeholder="My Bucket"/></div>
+    <div class="field"><label>Access</label><select id="bkt-public"><option value="false">🔒 Private — auth required</option><option value="true">🌐 Public — no auth needed</option></select></div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModal()">Cancel</button>
+      <button class="btn btn-brand" onclick="submitCreateBucket()">Create Bucket</button>
+    </div>
+  </div>`);
+}
+
+async function submitCreateBucket() {
+  const id = document.getElementById('bkt-id').value.trim().replace(/\s+/g,'-').toLowerCase();
+  const name = document.getElementById('bkt-name').value.trim() || id;
+  const pub = document.getElementById('bkt-public').value === 'true';
+  if (!id) { toast('Bucket ID required', 'warn'); return; }
+  try {
+    await api('/api/storage/v1/buckets', { method: 'POST', body: JSON.stringify({ id, name, public: pub }) });
+    closeModal(); toast('Bucket created'); await loadBuckets();
+  } catch(e) { toast(e.message, 'error'); }
+}
+
+async function deleteBucketConfirm() {
+  if (!confirm(`Delete bucket "${activeBucket}" and all its files? This cannot be undone.`)) return;
+  try {
+    await api(`/api/storage/v1/buckets?id=${encodeURIComponent(activeBucket)}`, { method: 'DELETE' });
+    toast('Bucket deleted'); activeBucket = null; renderStorage();
+  } catch(e) { toast(e.message, 'error'); }
+}
+
+function showUploadModal() {
+  showModal(`<div class="modal">
+    <div class="modal-title">Upload File to <span style="color:var(--brand)">${esc(activeBucket)}</span></div>
+    <div class="field"><label>File</label><input id="upload-file" type="file"/></div>
+    <div class="field"><label>Path in bucket (optional)</label><input id="upload-path" placeholder="folder/file.ext"/><div class="field-hint">Defaults to the file name. Use / for folders.</div></div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModal()">Cancel</button>
+      <button class="btn btn-brand" id="upload-btn" onclick="submitUpload()">Upload</button>
+    </div>
+  </div>`);
+}
+
+async function submitUpload() {
+  const fileInput = document.getElementById('upload-file');
+  const pathInput = document.getElementById('upload-path');
+  const file = fileInput?.files?.[0];
+  if (!file) { toast('Select a file', 'warn'); return; }
+  const filePath = pathInput?.value?.trim() || file.name;
+  const btn = document.getElementById('upload-btn');
+  if (btn) { btn.disabled = true; btn.textContent = 'Uploading…'; }
+  try {
+    const b64 = await fileToBase64(file);
+    await api(`/api/storage/v1/objects`, {
+      method: 'POST',
+      body: JSON.stringify({ data: b64, encoding: 'base64', bucket: activeBucket, path: filePath }),
+    });
+    closeModal(); toast('File uploaded'); loadBucketObjects();
+  } catch(e) { toast(e.message, 'error'); if (btn) { btn.disabled=false; btn.textContent='Upload'; } }
+}
+
+function fileToBase64(file) {
+  return new Promise((resolve, reject) => {
+    const r = new FileReader();
+    r.onload = e => resolve(e.target.result.split(',')[1]);
+    r.onerror = reject;
+    r.readAsDataURL(file);
+  });
+}
+
+async function downloadFile(name) {
+  try {
+    const res = await fetch(`/api/storage/v1/objects/${encodeURIComponent(activeBucket)}/${encodeURIComponent(name)}`, { headers: { 'x-api-key': apiKey } });
+    if (!res.ok) throw new Error('Download failed');
+    const blob = await res.blob();
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = name;
+    a.click();
+  } catch(e) { toast(e.message, 'error'); }
+}
+
+async function deleteFileConfirm(name) {
+  if (!confirm(`Delete "${name}"?`)) return;
+  try {
+    await api(`/api/storage/v1/objects/${encodeURIComponent(activeBucket)}/${encodeURIComponent(name)}`, { method: 'DELETE' });
+    toast('Deleted'); loadBucketObjects();
+  } catch(e) { toast(e.message, 'error'); }
+}
+
+// ── API Docs ──
+function renderAPI() {
+  const origin = location.origin;
+  const t = Object.keys(tables||{})[0] || 'users';
+  setMain(`
+<div class="page-header">
+  <div><div class="page-title">API Reference</div><div class="page-sub">Full REST, Auth, and Storage API — compatible with supabase-js</div></div>
+</div>
+<div class="page-body">
+  <div class="card" style="margin-bottom:16px">
+    <div class="card-header"><div class="card-title">🔌 supabase-js Drop-In Setup</div></div>
+    <div class="code-block">import { createClient } from '@supabase/supabase-js'
+
+// Replace your Supabase URL with this project URL
+const supabase = createClient('${origin}', 'YOUR_API_KEY')
+
+// All standard Supabase methods work identically:
+const { data } = await supabase.from('${t}').select('*').limit(10)
+await supabase.from('${t}').insert({ name: 'Alice' })
+await supabase.from('${t}').update({ name: 'Bob' }).eq('id', 1)
+await supabase.from('${t}').delete().eq('id', 1)
+const { data: { user } } = await supabase.auth.signUp({ email, password })
+const { data: { session } } = await supabase.auth.signInWithPassword({ email, password })</div>
+  </div>
+  <div style="font-size:13px;font-weight:700;margin-bottom:10px">REST API — <code style="font-size:11px;color:var(--muted)">/rest/v1/ or /api/rest/v1/</code></div>
+  ${[['GET',`/rest/v1/${t}?select=*&limit=10`,'Query rows. Supports: select, limit, offset, order, filter operators (eq, neq, gt, lt, like)'],['GET',`/rest/v1/${t}?id=eq.1&select=name,email`,'Filter by column. Combine multiple: ?name=eq.Alice&role=neq.admin'],['POST',`/rest/v1/${t}`,'Insert row(s). Set header Prefer: return=representation to get rows back'],['PATCH',`/rest/v1/${t}?id=eq.1`,'Update matching rows. Body = JSON columns to set'],['DELETE',`/rest/v1/${t}?id=eq.1`,'Delete matching rows. Requires at least one filter']].map(([m,p,d])=>
+    `<div class="api-card"><div class="api-card-head"><span class="method-badge method-${m}">${m}</span><span class="api-path">${esc(p)}</span></div><div class="api-card-body">${d}</div></div>`
+  ).join('')}
+  <div style="font-size:13px;font-weight:700;margin:20px 0 10px">Auth API — <code style="font-size:11px;color:var(--muted)">/auth/v1/</code></div>
+  ${[['POST','/auth/v1/signup','Sign up. Body: { email, password, data?: {} } → returns access_token + user'],['POST','/auth/v1/token?grant_type=password','Sign in. Body: { email, password } → returns access_token + refresh_token'],['POST','/auth/v1/token?grant_type=refresh_token','Refresh. Body: { refresh_token } → new access_token'],['GET','/auth/v1/user','Get current user (Authorization: Bearer <token>)'],['PUT','/auth/v1/user','Update current user. Body: { password?, data?: {} }'],['POST','/auth/v1/logout','Sign out (invalidates session)'],['GET','/api/auth/v1/admin/users','List all users (x-api-key required)'],['POST','/api/auth/v1/admin/users','Create user as admin'],['DELETE','/api/auth/v1/admin/users?id=USER_ID','Delete user as admin']].map(([m,p,d])=>
+    `<div class="api-card"><div class="api-card-head"><span class="method-badge method-${m}">${m}</span><span class="api-path">${esc(p)}</span></div><div class="api-card-body">${d}</div></div>`
+  ).join('')}
+  <div style="font-size:13px;font-weight:700;margin:20px 0 10px">Storage API — <code style="font-size:11px;color:var(--muted)">/storage/v1/</code></div>
+  ${[['GET','/api/storage/v1/buckets','List all buckets'],['POST','/api/storage/v1/buckets','Create bucket. Body: { id, name, public }'],['DELETE','/api/storage/v1/buckets?id=BUCKET','Delete bucket'],['POST','/api/storage/v1/objects','Upload file. Body: { bucket, path, data: base64, encoding: "base64" }'],['GET','/api/storage/v1/objects/:bucket/:path','Download file'],['DELETE','/api/storage/v1/objects/:bucket/:path','Delete file'],['GET','/api/storage/v1/objects?bucket=NAME&list=1','List objects in bucket']].map(([m,p,d])=>
+    `<div class="api-card"><div class="api-card-head"><span class="method-badge method-${m}">${m}</span><span class="api-path">${esc(p)}</span></div><div class="api-card-body">${d}</div></div>`
+  ).join('')}
+</div>`);
+}
+
+// ── Settings ──
+function renderSettings() {
+  const origin = location.origin;
+  setMain(`
+<div class="page-header">
+  <div><div class="page-title">Settings</div><div class="page-sub">Project configuration and environment variables</div></div>
+</div>
+<div class="page-body">
+  <div class="settings-group">
+    <div class="settings-title">Project</div>
+    <div class="settings-row"><div class="settings-key">URL</div><code style="font-size:11px;color:var(--muted)">${origin}</code></div>
+    <div class="settings-row"><div class="settings-key">Storage</div><code style="font-size:11px;color:var(--muted)">GitHub SQLite + Files</code></div>
+    <div class="settings-row"><div class="settings-key">Auth</div><code style="font-size:11px;color:var(--muted)">JWT (HS256) — no email verification</code></div>
+    <div class="settings-row"><div class="settings-key">Encryption</div><code style="font-size:11px;color:var(--muted)">AES-256-GCM</code></div>
+  </div>
+  <div class="settings-group">
+    <div class="settings-title">Required Environment Variables</div>
+    <div style="font-size:12px;color:var(--muted);margin-bottom:12px">Set these in Replit Secrets or your Vercel project dashboard</div>
+    ${[
+      ['GITHUB_TOKEN','GitHub PAT with repo scope','Required'],
+      ['GITHUB_OWNER','GitHub username or org','Required'],
+      ['GITHUB_REPO','Storage repository name','Required'],
+      ['GITHUB_BRANCH','Branch (default: main)','Optional'],
+      ['API_KEY','Master admin API key','Required'],
+      ['API_KEYS','Scoped keys: name:key:role,…','Optional'],
+      ['JWT_SECRET','JWT signing secret','Recommended'],
+      ['ENCRYPTION_KEY','AES-256 encryption key','Recommended'],
+      ['ENCRYPTION_SALT','Key derivation salt','Recommended'],
+    ].map(([k,d,r])=>`<div class="settings-row">
+      <div><div class="settings-key" style="font-family:var(--mono);color:var(--brand)">${k}</div><div style="font-size:11px;color:var(--muted2);margin-top:2px">${d}</div></div>
+      <span class="badge ${r==='Required'?'badge-red':'badge-yellow'}" style="font-size:10px;flex-shrink:0">${r}</span>
+    </div>`).join('')}
+  </div>
+  <div class="settings-group">
+    <div class="settings-title">Audit Log</div>
+    <div id="audit-area"><div style="display:flex;gap:8px;align-items:center;color:var(--muted)"><div class="spinner"></div> Loading…</div></div>
+  </div>
+</div>`);
+  loadAuditLogs();
+}
+
+async function loadAuditLogs() {
+  try {
+    const { events } = await api('/api/admin/audit?limit=20');
+    const el = document.getElementById('audit-area');
+    if (!el) return;
+    if (!events?.length) { el.innerHTML = '<div style="font-size:12px;color:var(--muted2)">No events recorded yet</div>'; return; }
+    el.innerHTML = `<div class="card" style="padding:0;overflow:hidden"><table class="users-table">
+      <thead><tr><th>Time</th><th>Method</th><th>Action</th><th>Table</th><th>Status</th></tr></thead>
+      <tbody>${events.map(e=>`<tr>
+        <td style="font-size:10px;color:var(--muted);font-family:var(--mono)">${e.at?.slice(11,19)||''}</td>
+        <td>${e.method?`<span class="method-badge method-${e.method}" style="font-size:9px">${e.method}</span>`:'—'}</td>
+        <td style="font-size:11px">${esc(e.action||'')}</td>
+        <td style="font-family:var(--mono);font-size:10px">${esc(e.table||'')}</td>
+        <td><span class="badge ${e.status==='success'?'badge-green':'badge-red'}" style="font-size:9px">${esc(e.status||'')}</span></td>
+      </tr>`).join('')}</tbody>
+    </table></div>`;
+  } catch(e) {}
+}
+
+// ── Connect Modal ──
+function showConnectModal() {
+  const origin = location.origin;
+  showModal(`<div class="modal" style="width:min(580px,100%)">
+    <div class="modal-title">Connect Your App</div>
+    <div class="connect-tabs">
+      <div class="connect-tab active" onclick="switchTab(this,'ctab-js')">JavaScript</div>
+      <div class="connect-tab" onclick="switchTab(this,'ctab-py')">Python</div>
+      <div class="connect-tab" onclick="switchTab(this,'ctab-curl')">cURL</div>
+    </div>
+    <div id="ctab-js"><div class="code-block">// npm install @supabase/supabase-js
+import { createClient } from '@supabase/supabase-js'
+
+const supabase = createClient('${origin}', 'YOUR_API_KEY')
+
+// Auth
+const { data } = await supabase.auth.signUp({ email, password })
+const { data } = await supabase.auth.signInWithPassword({ email, password })
+
+// Data — same as Supabase
+const { data } = await supabase.from('table').select('*')
+await supabase.from('table').insert({ name: 'Alice' })
+await supabase.from('table').update({ name: 'Bob' }).eq('id', 1)
+await supabase.from('table').delete().eq('id', 1)
+
+// Storage
+await supabase.storage.from('bucket').upload('file.txt', blob)
+const { data: { publicUrl } } = supabase.storage.from('bucket').getPublicUrl('file.txt')</div></div>
+    <div id="ctab-py" style="display:none"><div class="code-block">import requests, json
+
+BASE = '${origin}'
+KEY  = 'YOUR_API_KEY'
+H    = {'x-api-key': KEY, 'Content-Type': 'application/json'}
+
+# Select
+r = requests.get(f'{BASE}/rest/v1/users?select=*&limit=10', headers=H)
+print(r.json())
+
+# Insert
+r = requests.post(f'{BASE}/rest/v1/users', json={'name':'Alice'}, headers=H)
+
+# Auth sign-up
+r = requests.post(f'{BASE}/auth/v1/signup',
+  json={'email':'a@b.com','password':'secret'}, headers=H)
+token = r.json()['access_token']</div></div>
+    <div id="ctab-curl" style="display:none"><div class="code-block">export URL='${origin}' KEY='YOUR_API_KEY'
+
+# List tables
+curl $URL/api/tables -H "x-api-key: $KEY"
+
+# Query rows
+curl "$URL/rest/v1/users?select=*" -H "x-api-key: $KEY"
+
+# Insert row
+curl -X POST $URL/rest/v1/users \\
+  -H "x-api-key: $KEY" -H "Content-Type: application/json" \\
+  -d '{"name":"Alice","email":"alice@example.com"}'
+
+# Sign up
+curl -X POST $URL/auth/v1/signup \\
+  -H "Content-Type: application/json" \\
+  -d '{"email":"a@b.com","password":"secret123"}'</div></div>
+    <div class="modal-footer"><button class="btn btn-brand" onclick="closeModal()">Done</button></div>
+  </div>`);
+}
+
+function switchTab(tab, id) {
+  document.querySelectorAll('.connect-tab').forEach(t=>t.classList.remove('active'));
+  tab.classList.add('active');
+  ['ctab-js','ctab-py','ctab-curl'].forEach(t=>{
+    const el = document.getElementById(t);
+    if (el) el.style.display = t===id?'block':'none';
+  });
+}
+
+// ── Helpers ──
+function esc(s) { return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+function formatBytes(b) { if(!b)return'0 B'; const k=1024,s=['B','KB','MB','GB']; const i=Math.floor(Math.log(b)/Math.log(k)); return(b/Math.pow(k,i)).toFixed(1)+' '+s[i]; }
+
+// ── Init ──
+render();
+if (apiKey) boot();
 </script>
 </body>
 </html>

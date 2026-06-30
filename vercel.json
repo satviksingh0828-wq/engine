@@ -3,7 +3,19 @@
   "functions": {
     "api/**/*.js": {
       "memory": 1024,
-      "maxDuration": 15
+      "maxDuration": 30
     }
-  }
+  },
+  "rewrites": [
+    { "source": "/rest/v1/:table", "destination": "/api/rest/v1/[table]" },
+    { "source": "/auth/v1/signup", "destination": "/api/auth/v1/signup" },
+    { "source": "/auth/v1/token", "destination": "/api/auth/v1/token" },
+    { "source": "/auth/v1/logout", "destination": "/api/auth/v1/logout" },
+    { "source": "/auth/v1/user", "destination": "/api/auth/v1/user" },
+    { "source": "/auth/v1/admin/users", "destination": "/api/auth/v1/admin/users" },
+    { "source": "/storage/v1/bucket", "destination": "/api/storage/v1/buckets" },
+    { "source": "/storage/v1/bucket/:id", "destination": "/api/storage/v1/buckets?id=:id" },
+    { "source": "/storage/v1/object/:path*", "destination": "/api/storage/v1/objects" },
+    { "source": "/storage/v1/object/list/:bucket", "destination": "/api/storage/v1/objects" }
+  ]
 }
