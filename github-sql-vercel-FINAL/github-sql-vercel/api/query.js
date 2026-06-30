@@ -1,9 +1,5 @@
-// api/query.js  (Vercel serverless function)
-// POST { "sql": "..." } -> runs SQL against the matching table file in GitHub.
-// Auto-creates and bootstraps the repo on the very first call.
-
-import initSqlJs from "sql.js";
-import { createRequire } from "module";
+import { checkApiKey } from "../lib/auth.js";
+import { getSqlEngine } from "../lib/sqlEngine.js";
 import {
   ensureRepoBootstrapped,
   getTableFile,
@@ -13,23 +9,9 @@ import {
 } from "../lib/github.js";
 import { parseStatement } from "../lib/parseSql.js";
 
-const require = createRequire(import.meta.url);
-
-let SQL;
-async function getSqlEngine() {
-  if (!SQL) {
-    // require.resolve finds the actual installed location of the wasm file
-    // inside node_modules, regardless of the function's working directory —
-    // this is what makes it reliable inside Vercel's serverless runtime.
-    const wasmPath = require.resolve("sql.js/dist/sql-wasm.wasm");
-    SQL = await initSqlJs({
-      locateFile: () => wasmPath,
-    });
-  }
-  return SQL;
-}
-
 export default async function handler(req, res) {
+  if (!checkApiKey(req, res)) return;
+
   try {
     await ensureRepoBootstrapped();
   } catch (err) {
