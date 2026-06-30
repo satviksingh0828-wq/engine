@@ -1,0 +1,45 @@
+22:37:50.933 Running build in Washington, D.C., USA (East) – iad1
+22:37:50.934 Build machine configuration: 2 cores, 8 GB
+22:37:51.028 Cloning github.com/satviksingh0828-wq/engine (Branch: main, Commit: aecbaa2)
+22:37:51.029 Previous build caches not available.
+22:37:51.242 Cloning completed: 214.000ms
+22:37:51.720 Running "vercel build"
+22:37:51.738 Vercel CLI 54.18.4
+22:37:52.437 Error: Node.js version 20.x is deprecated. Deployments created on or after 2026-10-01 will fail to build. Please set "engines": { "node": "24.x" } in your `package.json` file to use Node.js 24.
+22:37:52.438 Warning: Due to "engines": { "node": "20.x" } in your `package.json` file, the Node.js Version defined in your Project Settings ("24.x") will not apply, Node.js Version "20.x" will be used instead. Learn More: https://vercel.link/node-version
+22:37:52.449 Installing dependencies...
+22:39:03.402 npm error Exit handler never called!
+22:39:03.403 npm error This is an error with npm itself. Please report this error at:
+22:39:03.404 npm error   <https://github.com/npm/cli/issues>
+22:39:03.404 npm error A complete log of this run can be found in: /vercel/.npm/_logs/2026-06-30T17_07_52_572Z-debug-0.log
+22:39:03.592 Error: Node.js version 20.x is deprecated. Deployments created on or after 2026-10-01 will fail to build. Please set "engines": { "node": "24.x" } in your `package.json` file to use Node.js 24.
+22:39:03.592 Warning: Due to "engines": { "node": "20.x" } in your `package.json` file, the Node.js Version defined in your Project Settings ("24.x") will not apply, Node.js Version "20.x" will be used instead. Learn More: https://vercel.link/node-version
+22:39:03.654 Error: Node.js version 20.x is deprecated. Deployments created on or after 2026-10-01 will fail to build. Please set "engines": { "node": "24.x" } in your `package.json` file to use Node.js 24.
+22:39:03.655 Warning: Due to "engines": { "node": "20.x" } in your `package.json` file, the Node.js Version defined in your Project Settings ("24.x") will not apply, Node.js Version "20.x" will be used instead. Learn More: https://vercel.link/node-version
+22:39:03.692 Error: Node.js version 20.x is deprecated. Deployments created on or after 2026-10-01 will fail to build. Please set "engines": { "node": "24.x" } in your `package.json` file to use Node.js 24.
+22:39:03.693 Warning: Due to "engines": { "node": "20.x" } in your `package.json` file, the Node.js Version defined in your Project Settings ("24.x") will not apply, Node.js Version "20.x" will be used instead. Learn More: https://vercel.link/node-version
+22:39:03.730 Error: Node.js version 20.x is deprecated. Deployments created on or after 2026-10-01 will fail to build. Please set "engines": { "node": "24.x" } in your `package.json` file to use Node.js 24.
+22:39:03.730 Warning: Due to "engines": { "node": "20.x" } in your `package.json` file, the Node.js Version defined in your Project Settings ("24.x") will not apply, Node.js Version "20.x" will be used instead. Learn More: https://vercel.link/node-version
+22:39:03.761 Error: Node.js version 20.x is deprecated. Deployments created on or after 2026-10-01 will fail to build. Please set "engines": { "node": "24.x" } in your `package.json` file to use Node.js 24.
+22:39:03.762 Warning: Due to "engines": { "node": "20.x" } in your `package.json` file, the Node.js Version defined in your Project Settings ("24.x") will not apply, Node.js Version "20.x" will be used instead. Learn More: https://vercel.link/node-version
+22:39:03.800 Error: Node.js version 20.x is deprecated. Deployments created on or after 2026-10-01 will fail to build. Please set "engines": { "node": "24.x" } in your `package.json` file to use Node.js 24.
+22:39:03.800 Warning: Due to "engines": { "node": "20.x" } in your `package.json` file, the Node.js Version defined in your Project Settings ("24.x") will not apply, Node.js Version "20.x" will be used instead. Learn More: https://vercel.link/node-version
+22:39:03.838 Error: Node.js version 20.x is deprecated. Deployments created on or after 2026-10-01 will fail to build. Please set "engines": { "node": "24.x" } in your `package.json` file to use Node.js 24.
+22:39:03.839 Warning: Due to "engines": { "node": "20.x" } in your `package.json` file, the Node.js Version defined in your Project Settings ("24.x") will not apply, Node.js Version "20.x" will be used instead. Learn More: https://vercel.link/node-version
+22:39:04.030 Error: Node.js version 20.x is deprecated. Deployments created on or after 2026-10-01 will fail to build. Please set "engines": { "node": "24.x" } in your `package.json` file to use Node.js 24.
+22:39:04.031 Warning: Due to "engines": { "node": "20.x" } in your `package.json` file, the Node.js Version defined in your Project Settings ("24.x") will not apply, Node.js Version "20.x" will be used instead. Learn More: https://vercel.link/node-version
+22:39:04.053 Error: Node.js version 20.x is deprecated. Deployments created on or after 2026-10-01 will fail to build. Please set "engines": { "node": "24.x" } in your `package.json` file to use Node.js 24.
+22:39:04.054 Warning: Due to "engines": { "node": "20.x" } in your `package.json` file, the Node.js Version defined in your Project Settings ("24.x") will not apply, Node.js Version "20.x" will be used instead. Learn More: https://vercel.link/node-version
+22:39:04.074 Error: Node.js version 20.x is deprecated. Deployments created on or after 2026-10-01 will fail to build. Please set "engines": { "node": "24.x" } in your `package.json` file to use Node.js 24.
+22:39:04.075 Warning: Due to "engines": { "node": "20.x" } in your `package.json` file, the Node.js Version defined in your Project Settings ("24.x") will not apply, Node.js Version "20.x" will be used instead. Learn More: https://vercel.link/node-version
+22:39:04.099 Error: Node.js version 20.x is deprecated. Deployments created on or after 2026-10-01 will fail to build. Please set "engines": { "node": "24.x" } in your `package.json` file to use Node.js 24.
+22:39:04.099 Warning: Due to "engines": { "node": "20.x" } in your `package.json` file, the Node.js Version defined in your Project Settings ("24.x") will not apply, Node.js Version "20.x" will be used instead. Learn More: https://vercel.link/node-version
+22:39:04.162 Error: Node.js version 20.x is deprecated. Deployments created on or after 2026-10-01 will fail to build. Please set "engines": { "node": "24.x" } in your `package.json` file to use Node.js 24.
+22:39:04.163 Warning: Due to "engines": { "node": "20.x" } in your `package.json` file, the Node.js Version defined in your Project Settings ("24.x") will not apply, Node.js Version "20.x" will be used instead. Learn More: https://vercel.link/node-version
+22:39:04.287 Error: Node.js version 20.x is deprecated. Deployments created on or after 2026-10-01 will fail to build. Please set "engines": { "node": "24.x" } in your `package.json` file to use Node.js 24.
+22:39:04.288 Warning: Due to "engines": { "node": "20.x" } in your `package.json` file, the Node.js Version defined in your Project Settings ("24.x") will not apply, Node.js Version "20.x" will be used instead. Learn More: https://vercel.link/node-version
+22:39:04.314 Error: Node.js version 20.x is deprecated. Deployments created on or after 2026-10-01 will fail to build. Please set "engines": { "node": "24.x" } in your `package.json` file to use Node.js 24.
+22:39:04.315 Warning: Due to "engines": { "node": "20.x" } in your `package.json` file, the Node.js Version defined in your Project Settings ("24.x") will not apply, Node.js Version "20.x" will be used instead. Learn More: https://vercel.link/node-version
+22:39:04.471 Build Completed in /vercel/output [1m]
+22:39:04.583 Deploying outputs...
+22:39:04.590 Warning: Provided `memory` setting in `vercel.json` is ignored on Active CPU billing. You can safely remove this setting from your configuration. Learn more: https://vercel.com/docs/fluid-compute/pricing

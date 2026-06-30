@@ -26,59 +26,45 @@ app.use((req, res, next) => {
   }
 });
 
-function wrap(importFn) {
-  return async (req, res) => {
+let catchAll;
+async function getHandler() {
+  if (!catchAll) {
+    const mod = await import("./api/[...all].js");
+    catchAll = mod.default;
+  }
+  return catchAll;
+}
+
+const API_PREFIXES = ["/auth/v1", "/rest/v1", "/storage/v1", "/api"];
+
+app.all("*", async (req, res, next) => {
+  const url = req.url.split("?")[0];
+
+  let apiPath = null;
+  if (url.startsWith("/api/")) {
+    apiPath = url.slice(5);
+  } else if (url.startsWith("/auth/v1/")) {
+    apiPath = "auth/v1/" + url.slice(9);
+  } else if (url.startsWith("/rest/v1/")) {
+    apiPath = "rest/v1/" + url.slice(9);
+  } else if (url.startsWith("/storage/v1/")) {
+    apiPath = "storage/v1/" + url.slice(12);
+  }
+
+  if (apiPath !== null) {
+    req.query.all = apiPath.split("/").filter(Boolean);
     try {
-      const mod = await importFn();
-      await mod.default(req, res);
+      const handler = await getHandler();
+      return await handler(req, res);
     } catch (err) {
       console.error(err);
       if (!res.headersSent) res.status(500).json({ error: err.message });
     }
-  };
-}
+    return;
+  }
 
-app.use(["/api/rest/v1/:table", "/rest/v1/:table"], (req, res, next) => {
-  req.query.table = req.params.table;
   next();
-}, wrap(() => import("./api/rest/v1/[table].js")));
-
-app.post(["/api/auth/v1/signup", "/auth/v1/signup"], wrap(() => import("./api/auth/v1/signup.js")));
-app.post(["/api/auth/v1/token", "/auth/v1/token"], wrap(() => import("./api/auth/v1/token.js")));
-app.post(["/api/auth/v1/logout", "/auth/v1/logout"], wrap(() => import("./api/auth/v1/logout.js")));
-app.get(["/api/auth/v1/user", "/auth/v1/user"], wrap(() => import("./api/auth/v1/user.js")));
-app.put(["/api/auth/v1/user", "/auth/v1/user"], wrap(() => import("./api/auth/v1/user.js")));
-app.all("/api/auth/v1/admin/users", wrap(() => import("./api/auth/v1/admin/users.js")));
-
-app.all(["/api/storage/v1/buckets", "/api/storage/v1/buckets/:id", "/storage/v1/bucket", "/storage/v1/bucket/:id"],
-  (req, res, next) => {
-    if (req.params.id) req.query.id = req.params.id;
-    next();
-  }, wrap(() => import("./api/storage/v1/buckets.js"))
-);
-
-app.all([
-  "/api/storage/v1/objects",
-  "/api/storage/v1/objects/:bucket",
-  "/api/storage/v1/objects/:bucket/*",
-  "/storage/v1/object/:bucket/*",
-], (req, res, next) => {
-  const wildcard = req.params[0];
-  if (req.params.bucket) req.params.bucket = req.params.bucket;
-  if (wildcard) req.params.path = wildcard;
-  next();
-}, wrap(() => import("./api/storage/v1/objects.js")));
-
-app.get("/api/admin/health", wrap(() => import("./api/admin/health.js")));
-app.all("/api/admin/policies", wrap(() => import("./api/admin/policies.js")));
-app.get("/api/admin/audit", wrap(() => import("./api/admin/audit.js")));
-app.get("/api/tables", wrap(() => import("./api/tables/index.js")));
-app.all("/api/tables/:table", (req, res, next) => {
-  req.query.table = req.params.table;
-  next();
-}, wrap(() => import("./api/tables/[table].js")));
-app.get("/api/init", wrap(() => import("./api/init.js")));
-app.post("/api/query", wrap(() => import("./api/query.js")));
+});
 
 app.use(express.static(path.join(__dirname, "public")));
 app.get("*", (req, res) => {
