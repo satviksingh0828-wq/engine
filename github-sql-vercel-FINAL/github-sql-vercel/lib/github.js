@@ -52,6 +52,19 @@ async function createFile(path, contentString, message) {
 }
 
 let bootstrapped = false;
+let schemaCache = null;
+let schemaCacheAt = 0;
+const SCHEMA_CACHE_MS = Number(process.env.ENGINE_SCHEMA_CACHE_MS || 30_000);
+
+function setSchemaCache(schema, sha) {
+  schemaCache = { schema, sha };
+  schemaCacheAt = Date.now();
+}
+
+function clearSchemaCache() {
+  schemaCache = null;
+  schemaCacheAt = 0;
+}
 
 export async function ensureRepoBootstrapped() {
   if (bootstrapped) return;
@@ -114,7 +127,26 @@ export async function saveTableFile(tableName, buffer, sha, commitMessage) {
   );
 }
 
-export async function getSchema() {
+export async function deleteTableFile(tableName, sha) {
+  const current = sha || (await getTableFile(tableName)).sha;
+  if (!current) return null;
+  return withRetry(() =>
+    octokit.repos.deleteFile({
+      owner: OWNER,
+      repo: REPO,
+      path: tablePath(tableName),
+      message: `Delete table ${tableName}`,
+      branch: BRANCH,
+      sha: current,
+    })
+  );
+}
+
+export async function getSchema({ force = false } = {}) {
+  if (!force && schemaCache && Date.now() - schemaCacheAt < SCHEMA_CACHE_MS) {
+    return schemaCache;
+  }
+
   try {
     const { data } = await octokit.repos.getContent({
       owner: OWNER,
@@ -122,20 +154,24 @@ export async function getSchema() {
       path: "meta/_schema.json",
       ref: BRANCH,
     });
-    return {
+    const parsed = {
       schema: JSON.parse(Buffer.from(data.content, "base64").toString("utf-8")),
       sha: data.sha,
     };
+    setSchemaCache(parsed.schema, parsed.sha);
+    return parsed;
   } catch (err) {
     if (err.status === 404) {
-      return { schema: { tables: {} }, sha: null };
+      const fallback = { schema: { tables: {} }, sha: null };
+      setSchemaCache(fallback.schema, fallback.sha);
+      return fallback;
     }
     throw err;
   }
 }
 
 export async function saveSchema(schemaObj, sha) {
-  return withRetry(() =>
+  const result = await withRetry(() =>
     octokit.repos.createOrUpdateFileContents({
       owner: OWNER,
       repo: REPO,
@@ -146,12 +182,43 @@ export async function saveSchema(schemaObj, sha) {
       sha: sha || undefined,
     })
   );
+  setSchemaCache(schemaObj, result?.data?.content?.sha || sha || null);
+  return result;
+}
+
+export function invalidateSchemaCache() {
+  clearSchemaCache();
 }
 
 export async function registerTable(tableName, columns) {
   const { schema, sha } = await getSchema();
-  schema.tables[tableName] = { columns, createdAt: new Date().toISOString() };
+  schema.tables[tableName] = {
+    columns,
+    policies: schema.tables[tableName]?.policies || {
+      select: { roles: ["admin", "service", "anon"] },
+      insert: { roles: ["admin", "service"] },
+      update: { roles: ["admin", "service"] },
+      delete: { roles: ["admin", "service"] },
+    },
+    createdAt: schema.tables[tableName]?.createdAt || new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  };
   await saveSchema(schema, sha);
+}
+
+export async function unregisterTable(tableName) {
+  const { schema, sha } = await getSchema();
+  delete schema.tables[tableName];
+  await saveSchema(schema, sha);
+}
+
+export async function updateTablePolicies(tableName, policies) {
+  const { schema, sha } = await getSchema();
+  if (!schema.tables[tableName]) throw new Error(`Table '${tableName}' does not exist.`);
+  schema.tables[tableName].policies = policies;
+  schema.tables[tableName].updatedAt = new Date().toISOString();
+  await saveSchema(schema, sha);
+  return schema.tables[tableName];
 }
 
 export async function listTables() {

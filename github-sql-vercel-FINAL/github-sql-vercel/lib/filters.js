@@ -1,3 +1,5 @@
+import { assertIdentifier } from "./validators.js";
+
 const OPS = {
   eq: "=",
   neq: "!=",
@@ -10,26 +12,29 @@ const OPS = {
 
 const RESERVED_PARAMS = new Set(["limit", "offset", "order", "table"]);
 
-export function parseFilters(query) {
+function validateFilterColumn(key, allowedColumns) {
+  assertIdentifier(key, `Filter column '${key}'`);
+  if (Array.isArray(allowedColumns) && !allowedColumns.includes(key)) {
+    throw new Error(`Filter column '${key}' does not exist in this table schema.`);
+  }
+}
+
+export function parseFilters(query, allowedColumns = null) {
   const conditions = [];
   const params = [];
 
   for (const [key, rawValue] of Object.entries(query || {})) {
     if (RESERVED_PARAMS.has(key)) continue;
-    if (!/^[a-zA-Z_][a-zA-Z0-9_]*$/.test(key)) {
-      throw new Error(`Invalid filter column name: ${key}`);
-    }
+    validateFilterColumn(key, allowedColumns);
 
     const value = Array.isArray(rawValue) ? rawValue[0] : rawValue;
-    const dotIndex = value.indexOf(".");
+    const dotIndex = String(value).indexOf(".");
     if (dotIndex === -1) {
-      throw new Error(
-        `Invalid filter syntax for '${key}'. Expected format: ${key}=eq.value`
-      );
+      throw new Error(`Invalid filter syntax for '${key}'. Expected format: ${key}=eq.value`);
     }
 
-    const op = value.slice(0, dotIndex);
-    const val = value.slice(dotIndex + 1);
+    const op = String(value).slice(0, dotIndex);
+    const val = String(value).slice(dotIndex + 1);
 
     if (!OPS[op]) {
       throw new Error(`Unsupported filter operator '${op}'. Allowed: ${Object.keys(OPS).join(", ")}`);
@@ -45,17 +50,18 @@ export function parseFilters(query) {
   };
 }
 
-export function parseOrder(query) {
+export function parseOrder(query, allowedColumns = null) {
   if (!query?.order) return "";
-  const match = String(query.order).match(/^[a-zA-Z_][a-zA-Z0-9_]*\.(asc|desc)$/);
+  const match = String(query.order).match(/^([a-zA-Z_][a-zA-Z0-9_]*)\.(asc|desc)$/);
   if (!match) return "";
-  const [column, direction] = query.order.split(".");
+  const [, column, direction] = match;
+  if (Array.isArray(allowedColumns) && !allowedColumns.includes(column)) return "";
   return `ORDER BY ${column} ${direction.toUpperCase()}`;
 }
 
 export function parseLimitOffset(query) {
-  const limit = Number.isInteger(Number(query?.limit)) ? Number(query.limit) : null;
-  const offset = Number.isInteger(Number(query?.offset)) ? Number(query.offset) : null;
+  const limit = Number.isInteger(Number(query?.limit)) ? Math.max(0, Math.min(Number(query.limit), 500)) : null;
+  const offset = Number.isInteger(Number(query?.offset)) ? Math.max(0, Number(query.offset)) : null;
   let clause = "";
   if (limit !== null) clause += ` LIMIT ${limit}`;
   if (offset !== null) clause += ` OFFSET ${offset}`;
