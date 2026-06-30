@@ -16,7 +16,10 @@ let SQL;
 async function getSqlEngine() {
   if (!SQL) {
     SQL = await initSqlJs({
-      locateFile: (file) => `node_modules/sql.js/dist/${file}`,
+      // Local node_modules paths don't reliably resolve inside Vercel's
+      // serverless function runtime. Loading the wasm binary from sql.js's
+      // own CDN avoids that entirely.
+      locateFile: (file) => `https://sql.js.org/dist/${file}`,
     });
   }
   return SQL;
@@ -52,9 +55,9 @@ export default async function handler(req, res) {
   }
 
   const { type, table, columns } = statement;
-  const SQLEngine = await getSqlEngine();
 
   try {
+    const SQLEngine = await getSqlEngine();
     const { buffer, sha } = await getTableFile(table);
 
     if (!buffer && type !== "CREATE") {
