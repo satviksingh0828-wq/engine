@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Engine — Data Dashboard</title>
+<style>
+  :root {
+    --bg: #0f1117;
+    --panel: #161922;
+    --panel-2: #1d2129;
+    --border: #2a2f3a;
+    --text: #e6e8ee;
+    --text-dim: #9aa1ae;
+    --accent: #3ecf8e;
+    --accent-dim: #2a9d6f;
+    --danger: #e5534b;
+    --radius: 8px;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    display: flex;
+    height: 100vh;
+    overflow: hidden;
+  }
+  #sidebar {
+    width: 220px;
+    background: var(--panel);
+    border-right: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    flex-shrink: 0;
+  }
+  #sidebar header {
+    padding: 16px;
+    font-weight: 600;
+    font-size: 14px;
+    border-bottom: 1px solid var(--border);
+    color: var(--accent);
+  }
+  #table-list { flex: 1; overflow-y: auto; padding: 8px; }
+  .table-item {
+    padding: 8px 10px;
+    border-radius: var(--radius);
+    cursor: pointer;
+    font-size: 13px;
+    color: var(--text-dim);
+    margin-bottom: 2px;
+  }
+  .table-item:hover { background: var(--panel-2); color: var(--text); }
+  .table-item.active { background: var(--panel-2); color: var(--accent); }
+  #sidebar-footer { padding: 10px; border-top: 1px solid var(--border); }
+  #main { flex: 1; display: flex; flex-direction: column; min-width: 0; }
+  #topbar {
+    padding: 10px 16px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    background: var(--panel);
+  }
+  .tab-btn {
+    background: none;
+    border: none;
+    color: var(--text-dim);
+    padding: 6px 12px;
+    border-radius: var(--radius);
+    cursor: pointer;
+    font-size: 13px;
+  }
+  .tab-btn.active { background: var(--panel-2); color: var(--text); }
+  #content { flex: 1; overflow: auto; padding: 16px; }
+  input, textarea, select, button {
+    font-family: inherit;
+    font-size: 13px;
+    background: var(--panel-2);
+    border: 1px solid var(--border);
+    color: var(--text);
+    border-radius: var(--radius);
+    padding: 7px 10px;
+  }
+  button { cursor: pointer; }
+  button.primary { background: var(--accent); border-color: var(--accent); color: #06140f; font-weight: 600; }
+  button.primary:hover { background: var(--accent-dim); }
+  button.danger { color: var(--danger); border-color: var(--danger); background: transparent; }
+  button.danger:hover { background: rgba(229,83,75,0.1); }
+  table { border-collapse: collapse; width: 100%; font-size: 13px; }
+  th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--border); white-space: nowrap; }
+  th { color: var(--text-dim); font-weight: 500; position: sticky; top: 0; background: var(--bg); }
+  tr:hover { background: var(--panel); }
+  td input { width: 100%; min-width: 80px; background: transparent; border: 1px solid transparent; }
+  td input:focus { background: var(--panel-2); border-color: var(--accent); }
+  #sql-editor { width: 100%; height: 140px; resize: vertical; margin-bottom: 8px; }
+  #sql-result { background: var(--panel); border-radius: var(--radius); padding: 12px; font-family: monospace; font-size: 12px; white-space: pre-wrap; max-height: 300px; overflow: auto; }
+  .empty-state { color: var(--text-dim); text-align: center; padding: 60px 20px; font-size: 13px; }
+  .row-actions button { padding: 3px 8px; font-size: 11px; }
+  #key-gate { display:flex; align-items:center; justify-content:center; height:100vh; width:100vw; position:fixed; inset:0; background:var(--bg); z-index:50; }
+  #key-gate .box { background: var(--panel); border:1px solid var(--border); border-radius: var(--radius); padding: 24px; width: 320px; }
+  #key-gate h2 { margin-top:0; font-size:15px; }
+  #key-gate input { width: 100%; margin: 10px 0; }
+  #key-gate button { width: 100%; }
+  .hint { font-size: 11px; color: var(--text-dim); margin-top: 12px; line-height: 1.5; }
+  .toolbar { display:flex; gap:8px; margin-bottom: 12px; align-items:center; flex-wrap: wrap; }
+  .badge { font-size: 11px; color: var(--text-dim); }
+</style>
+</head>
+<body>
+
+<div id="key-gate">
+  <div class="box">
+    <h2>Enter API Key</h2>
+    <input id="api-key-input" type="password" placeholder="x-api-key value" />
+    <button class="primary" onclick="saveKey()">Connect</button>
+    <p class="hint">This is the API_KEY you set as an environment variable in Vercel. It's stored only in this browser's local storage.</p>
+  </div>
+</div>
+
+<div id="sidebar" style="display:none">
+  <header>⚡ Engine</header>
+  <div id="table-list"></div>
+  <div id="sidebar-footer">
+    <button onclick="showNewTableForm()" style="width:100%">+ New table</button>
+  </div>
+</div>
+
+<div id="main" style="display:none">
+  <div id="topbar">
+    <button class="tab-btn active" id="tab-data" onclick="switchTab('data')">Table data</button>
+    <button class="tab-btn" id="tab-sql" onclick="switchTab('sql')">SQL editor</button>
+    <span style="flex:1"></span>
+    <span class="badge" id="current-table-label"></span>
+  </div>
+  <div id="content"></div>
+</div>
+
+<script>
+let apiKey = localStorage.getItem('engine_api_key') || '';
+let currentTable = null;
+let currentTab = 'data';
+let tablesCache = {};
+
+function saveKey() {
+  const val = document.getElementById('api-key-input').value.trim();
+  if (!val) return;
+  apiKey = val;
+  localStorage.setItem('engine_api_key', val);
+  boot();
+}
+
+async function api(path, options = {}) {
+  const res = await fetch(path, {
+    ...options,
+    headers: {
+      'Content-Type': 'application/json',
+      'x-api-key': apiKey,
+      ...(options.headers || {}),
+    },
+  });
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(data.error || ('Request failed: ' + res.status));
+  return data;
+}
+
+async function boot() {
+  document.getElementById('key-gate').style.display = 'none';
+  document.getElementById('sidebar').style.display = 'flex';
+  document.getElementById('main').style.display = 'flex';
+  await loadTableList();
+  switchTab('sql');
+}
+
+async function loadTableList() {
+  try {
+    const { tables } = await api('/api/tables');
+    tablesCache = tables || {};
+    const list = document.getElementById('table-list');
+    list.innerHTML = '';
+    Object.keys(tablesCache).forEach((name) => {
+      const div = document.createElement('div');
+      div.className = 'table-item' + (name === currentTable ? ' active' : '');
+      div.textContent = name;
+      div.onclick = () => { currentTable = name; switchTab('data'); };
+      list.appendChild(div);
+    });
+    if (!Object.keys(tablesCache).length) {
+      list.innerHTML = '<div class="empty-state">No tables yet.<br/>Use the SQL editor to create one.</div>';
+    }
+  } catch (err) {
+    alert('Failed to load tables: ' + err.message);
+  }
+}
+
+function switchTab(tab) {
+  currentTab = tab;
+  document.getElementById('tab-data').classList.toggle('active', tab === 'data');
+  document.getElementById('tab-sql').classList.toggle('active', tab === 'sql');
+  document.getElementById('current-table-label').textContent = currentTable ? ('Table: ' + currentTable) : '';
+  if (tab === 'data') renderDataTab();
+  else renderSqlTab();
+}
+
+function renderSqlTab() {
+  const content = document.getElementById('content');
+  content.innerHTML = \`
+    <textarea id="sql-editor" placeholder="CREATE TABLE users (id INTEGER PRIMARY KEY, name TEXT, email TEXT)"></textarea>
+    <div class="toolbar">
+      <button class="primary" onclick="runSql()">Run query</button>
+    </div>
+    <div id="sql-result"></div>
+  \`;
+}
+
+async function runSql() {
+  const sql = document.getElementById('sql-editor').value.trim();
+  const resultBox = document.getElementById('sql-result');
+  if (!sql) return;
+  resultBox.textContent = 'Running...';
+  try {
+    const data = await api('/api/query', { method: 'POST', body: JSON.stringify({ sql }) });
+    resultBox.textContent = JSON.stringify(data, null, 2);
+    await loadTableList();
+  } catch (err) {
+    resultBox.textContent = 'Error: ' + err.message;
+  }
+}
+
+function showNewTableForm() {
+  currentTable = null;
+  switchTab('sql');
+  document.getElementById('sql-editor').value = 'CREATE TABLE table_name (id INTEGER PRIMARY KEY, column_name TEXT)';
+  document.getElementById('sql-editor').focus();
+}
+
+async function renderDataTab() {
+  const content = document.getElementById('content');
+  if (!currentTable) {
+    content.innerHTML = '<div class="empty-state">Select a table from the sidebar, or create one in the SQL editor.</div>';
+    return;
+  }
+  content.innerHTML = '<div class="empty-state">Loading...</div>';
+  try {
+    const { data } = await api('/api/tables/' + encodeURIComponent(currentTable));
+    const columns = tablesCache[currentTable]?.columns || (data[0] ? Object.keys(data[0]) : []);
+
+    let html = '<div class="toolbar"><button class="primary" onclick="showAddRowForm()">+ Add row</button></div>';
+    html += '<table><thead><tr>';
+    columns.forEach((c) => html += '<th>' + c + '</th>');
+    html += '<th></th></tr></thead><tbody>';
+
+    data.forEach((row, idx) => {
+      html += '<tr>';
+      columns.forEach((c) => {
+        html += '<td><input data-row="' + idx + '" data-col="' + c + '" value="' + (row[c] ?? '').toString().replace(/"/g, '&quot;') + '" /></td>';
+      });
+      html += '<td class="row-actions">';
+      html += '<button onclick="saveRow(' + idx + ')">Save</button> ';
+      html += '<button class="danger" onclick="deleteRow(' + idx + ')">Delete</button>';
+      html += '</td></tr>';
+    });
+    html += '</tbody></table>';
+    if (!data.length) html += '<div class="empty-state">No rows yet.</div>';
+
+    content.innerHTML = html;
+    window.__currentRows = data;
+  } catch (err) {
+    content.innerHTML = '<div class="empty-state">Error loading data: ' + err.message + '</div>';
+  }
+}
+
+function showAddRowForm() {
+  const columns = tablesCache[currentTable]?.columns || [];
+  const values = {};
+  columns.forEach((c) => {
+    if (c === 'id') return; // assume auto-increment primary key
+    const v = prompt('Value for "' + c + '":');
+    if (v !== null) values[c] = v;
+  });
+  if (!Object.keys(values).length) return;
+  api('/api/tables/' + encodeURIComponent(currentTable), {
+    method: 'POST',
+    body: JSON.stringify(values),
+  }).then(renderDataTab).catch((err) => alert('Insert failed: ' + err.message));
+}
+
+function saveRow(idx) {
+  const row = window.__currentRows[idx];
+  const inputs = document.querySelectorAll('input[data-row="' + idx + '"]');
+  const updates = {};
+  inputs.forEach((input) => { updates[input.dataset.col] = input.value; });
+  const id = row.id;
+  if (id === undefined) { alert('Row has no "id" column — cannot target update.'); return; }
+  api('/api/tables/' + encodeURIComponent(currentTable) + '?id=eq.' + id, {
+    method: 'PUT',
+    body: JSON.stringify(updates),
+  }).then(renderDataTab).catch((err) => alert('Update failed: ' + err.message));
+}
+
+function deleteRow(idx) {
+  const row = window.__currentRows[idx];
+  const id = row.id;
+  if (id === undefined) { alert('Row has no "id" column — cannot target delete.'); return; }
+  if (!confirm('Delete this row?')) return;
+  api('/api/tables/' + encodeURIComponent(currentTable) + '?id=eq.' + id, {
+    method: 'DELETE',
+  }).then(renderDataTab).catch((err) => alert('Delete failed: ' + err.message));
+}
+
+if (apiKey) boot();
+</script>
+</body>
+</html>
