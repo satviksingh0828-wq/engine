@@ -35,12 +35,22 @@ registers it in the schema file automatically.
    - `GITHUB_REPO` — the repo name you want (it does NOT need to exist yet — leave
      it "blank" in the sense of unused/new, the app creates it)
    - `GITHUB_BRANCH` — optional, defaults to `main`
+   - `API_KEY` — **required.** Make up any secret string. Every API route (and the
+     dashboard itself) is locked behind this — without it you'll get
+     `500: Server misconfigured: API_KEY env var is not set.` on every request and
+     the dashboard will never load past the "Enter API Key" screen.
 
 4. **Redeploy** after adding env vars (Vercel requires a redeploy to pick them up).
 
-5. **Verify setup**: visit `https://your-project.vercel.app/api/init`. You should see
-   `{ "success": true, ... }`. If it fails, the error message tells you which part
-   to fix (usually token permissions).
+5. **Verify setup**: call `https://your-project.vercel.app/api/init` with header
+   `x-api-key: <the API_KEY value you set>` (e.g. `curl -H "x-api-key: yourkey"
+   https://your-project.vercel.app/api/init`). You should see `{ "success": true, ... }`.
+   If it fails, the error message tells you which part to fix (usually token
+   permissions).
+
+6. **Open the dashboard** at `https://your-project.vercel.app/`. When prompted,
+   enter the same `API_KEY` value — it's stored in your browser's local storage
+   and sent as the `x-api-key` header on every request.
 
 ## Using it
 
