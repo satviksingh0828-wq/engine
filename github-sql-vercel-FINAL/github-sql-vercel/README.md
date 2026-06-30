@@ -1,94 +1,90 @@
-# Self-Provisioning GitHub-SQL (Vercel)
+# Engine — GitHub SQLite backend with dashboard
 
-Deploy this once, set 3 environment variables, and the app creates and configures
-the GitHub repo itself on first use. You never touch the repo by hand.
+Engine is a self-provisioning Vercel API that stores each table as a SQLite file in a private GitHub repo. It now includes a console dashboard, safer table APIs, scoped keys, rate limiting, audit logs, admin health checks, and table policy metadata.
 
-## What "auto setup" actually does
-
-On the first request (or when you hit `/api/init` manually), the app:
-1. Checks whether `GITHUB_REPO` exists under `GITHUB_OWNER`. If not, creates it as
-   **private**.
-2. Adds a `tables/` folder (where each table's SQLite file will live).
-3. Adds `meta/_schema.json` — a registry tracking every table you create and its
-   columns, so the app always knows what exists without scanning the whole repo.
-4. Adds a README inside the data repo itself, noting it's machine-managed.
-
-After that, every `CREATE TABLE` you send creates a new file in `tables/` and
-registers it in the schema file automatically.
+> Engine is not a full Supabase replacement yet. It is a compact GitHub-backed backend for prototypes and small apps. For high write volume, joins, realtime, or large datasets, add a Postgres storage adapter.
 
 ## Setup
 
-1. **Deploy this project to Vercel** (`vercel deploy`, or connect the repo in the
-   Vercel dashboard).
+1. Deploy this project to Vercel.
+2. Create a GitHub token with repo creation and contents write permission.
+3. Set environment variables:
+   - `GITHUB_TOKEN`
+   - `GITHUB_OWNER`
+   - `GITHUB_REPO`
+   - `GITHUB_BRANCH` optional, defaults to `main`
+   - `API_KEY` required for legacy admin/service access
+   - `API_KEYS` optional comma-separated scoped keys: `name:key:role`
+4. Redeploy after adding environment variables.
+5. Open `/` and enter the API key in the Engine Console.
 
-2. **Create a GitHub token.** This part matters: creating a brand-new repo requires
-   more than the fine-grained "Contents" permission used elsewhere in this app.
-   Use ONE of:
-   - A **classic PAT** with the `repo` scope (simplest, works for personal accounts).
-   - A **fine-grained PAT** with account-level `Administration: write` permission
-     (needed specifically to create new repos), plus `Contents: write` on
-     "All repositories" so it can also write to the one it just created.
+## Windows CMD examples
 
-3. **Set environment variables in Vercel** (Project → Settings → Environment Variables):
-   - `GITHUB_TOKEN` — token from step 2
-   - `GITHUB_OWNER` — your GitHub username or org
-   - `GITHUB_REPO` — the repo name you want (it does NOT need to exist yet — leave
-     it "blank" in the sense of unused/new, the app creates it)
-   - `GITHUB_BRANCH` — optional, defaults to `main`
-   - `API_KEY` — **required.** Make up any secret string. Every API route (and the
-     dashboard itself) is locked behind this — without it you'll get
-     `500: Server misconfigured: API_KEY env var is not set.` on every request and
-     the dashboard will never load past the "Enter API Key" screen.
+Replace `https://your-project.vercel.app` with your deployment URL.
 
-4. **Redeploy** after adding env vars (Vercel requires a redeploy to pick them up).
-
-5. **Verify setup**: call `https://your-project.vercel.app/api/init` with header
-   `x-api-key: <the API_KEY value you set>` (e.g. `curl -H "x-api-key: yourkey"
-   https://your-project.vercel.app/api/init`). You should see `{ "success": true, ... }`.
-   If it fails, the error message tells you which part to fix (usually token
-   permissions).
-
-6. **Open the dashboard** at `https://your-project.vercel.app/`. When prompted,
-   enter the same `API_KEY` value — it's stored in your browser's local storage
-   and sent as the `x-api-key` header on every request.
-
-## Using it
-
-```
-POST /api/query
-{ "sql": "CREATE TABLE users (id INTEGER PRIMARY KEY, name TEXT, email TEXT)" }
-
-POST /api/query
-{ "sql": "INSERT INTO users (name, email) VALUES ('Asha', 'asha@example.com')" }
-
-POST /api/query
-{ "sql": "SELECT * FROM users" }
-
-GET /api/query
--> { "tables": { "users": { "columns": [...], "createdAt": "..." } } }
+```cmd
+curl -H "x-api-key: Testplay" https://your-project.vercel.app/api/init
 ```
 
-## What's "advanced and proper" about this version vs. the basic one
+```cmd
+curl -X POST https://your-project.vercel.app/api/query ^
+  -H "Content-Type: application/json" ^
+  -H "x-api-key: Testplay" ^
+  -d "{\"sql\":\"CREATE TABLE users (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, email TEXT)\"}"
+```
 
-- **Auto-provisioning**: no manual repo setup — just env vars and deploy.
-- **Schema registry**: `meta/_schema.json` tracks every table and its columns
-  centrally, instead of relying on directory listing (which breaks on empty repos).
-- **Retry with backoff**: concurrent writes to the same table no longer fail
-  outright — the app retries automatically if GitHub rejects a stale commit.
-- **Basic SQL hardening**: rejects stacked statements (`DROP TABLE x; SELECT...`)
-  and validates table names against a strict pattern.
+```cmd
+curl -X POST https://your-project.vercel.app/api/tables/users ^
+  -H "Content-Type: application/json" ^
+  -H "x-api-key: Testplay" ^
+  -d "{\"name\":\"Asha\",\"email\":\"asha@example.com\"}"
+```
 
-## Still true regardless of version (read this)
+```cmd
+curl -H "x-api-key: Testplay" "https://your-project.vercel.app/api/tables/users?order=id.desc&limit=10"
+```
 
-- **No cross-table joins** — each table is a separate SQLite file. Combine tables
-  into one shared file if you need joins.
-- **Round-trip latency** to GitHub's API on every call (roughly 200–500ms).
-- **Not built for high concurrent write volume** — retries help with occasional
-  collisions, not sustained heavy traffic. For that, use a real hosted database
-  (Postgres via Neon/Supabase/Vercel Postgres).
-- **This is not production-hardened SQL injection protection** — it blocks the
-  obvious stacked-statement attack but is not a substitute for parameterized
-  queries or a real SQL parser/validator. Don't expose this endpoint directly to
-  untrusted public users without adding an auth layer (API key, JWT, etc.) in front.
-- **Repo size target**: keep total size under ~2GB as planned — comfortably inside
-  GitHub's recommended limits for many SQLite tables of structured data.
+```cmd
+curl -X PUT "https://your-project.vercel.app/api/tables/users?id=eq.1" ^
+  -H "Content-Type: application/json" ^
+  -H "x-api-key: Testplay" ^
+  -d "{\"name\":\"Updated Asha\"}"
+```
+
+```cmd
+curl -X DELETE "https://your-project.vercel.app/api/tables/users?id=eq.1" ^
+  -H "x-api-key: Testplay"
+```
+
+## API surface
+
+- `GET /api/init` bootstraps the GitHub storage repo.
+- `GET /api/admin/health` returns storage health and limits.
+- `GET /api/admin/audit` returns recent in-memory audit events.
+- `GET /api/admin/policies` lists table policies.
+- `PUT /api/admin/policies` updates table role policies.
+- `GET /api/tables` lists schema registry tables.
+- `GET /api/tables/:table` reads rows with filters.
+- `POST /api/tables/:table` inserts a row.
+- `PUT /api/tables/:table` updates rows with required filters.
+- `DELETE /api/tables/:table` deletes rows with required filters.
+- `POST /api/query` runs admin-only single-statement SQL.
+
+## Security and platform improvements included
+
+- API keys can be configured as scoped records via `API_KEYS=name:key:role`.
+- Requests are rate-limited per key/IP in memory.
+- Dynamic table and column identifiers are validated before SQL construction.
+- REST writes validate request body columns against schema metadata when available.
+- Raw SQL is admin/service-only.
+- Table policies are stored in schema metadata and enforced by REST and SQL paths.
+- `DROP TABLE` now deletes the table file and unregisters schema metadata.
+- Audit events are recorded for table operations and exposed through an admin endpoint.
+- The dashboard includes overview, data editor, SQL editor, policies, audit logs, and API docs.
+
+## Limitations
+
+- GitHub-backed SQLite is not suited for high concurrent writes.
+- Each logical table is a separate SQLite file, so cross-table joins are intentionally unsupported.
+- Audit and rate-limit state are in-memory per serverless instance.
+- Password login, OAuth, realtime subscriptions, storage buckets, billing, and Postgres storage are architectural next steps.
