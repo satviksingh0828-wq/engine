@@ -8,7 +8,7 @@ const OPS = {
   like: "LIKE",
 };
 
-const RESERVED_PARAMS = new Set(["limit", "offset", "order"]);
+const RESERVED_PARAMS = new Set(["limit", "offset", "order", "table"]);
 
 export function parseFilters(query) {
   const conditions = [];
