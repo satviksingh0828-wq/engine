@@ -15,7 +15,9 @@ function configuredKeys() {
 export function checkApiKey(req, res, options = {}) {
   if (!rateLimit(req, res, options.rateLimit)) return false;
 
-  const provided = req.headers["x-api-key"];
+  const authHeader = req.headers.authorization || "";
+  const bearer = authHeader.toLowerCase().startsWith("bearer ") ? authHeader.slice(7).trim() : "";
+  const provided = req.headers["x-api-key"] || req.headers.apikey || bearer;
   const keys = configuredKeys();
 
   if (!keys.length) {

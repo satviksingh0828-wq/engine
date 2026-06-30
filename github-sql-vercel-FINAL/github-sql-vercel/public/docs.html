@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Engine API Docs</title>
+<style>
+:root{color-scheme:dark;--bg:#091017;--panel:#111a22;--line:#273544;--text:#e6edf3;--muted:#94a3b8;--green:#3ecf8e;--code:#0d141b}body{margin:0;background:linear-gradient(135deg,#0b1117,#10251d);color:var(--text);font:15px Inter,system-ui,sans-serif;line-height:1.6}.wrap{max-width:1120px;margin:0 auto;padding:34px 20px}header{display:flex;justify-content:space-between;gap:18px;align-items:center;margin-bottom:26px}.brand{font-size:30px;font-weight:900}.pill{border:1px solid var(--line);border-radius:999px;padding:7px 11px;color:var(--muted)}.grid{display:grid;grid-template-columns:280px 1fr;gap:18px}.nav{position:sticky;top:18px;align-self:start;background:rgba(17,26,34,.9);border:1px solid var(--line);border-radius:16px;padding:14px}.nav a{display:block;color:var(--muted);text-decoration:none;padding:8px 10px;border-radius:10px}.nav a:hover{background:#182330;color:var(--text)}section{background:rgba(17,26,34,.9);border:1px solid var(--line);border-radius:16px;padding:20px;margin-bottom:18px}h1,h2,h3{line-height:1.2}code,pre{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}pre{background:var(--code);border:1px solid var(--line);border-radius:14px;padding:14px;overflow:auto}.method{font-weight:800;color:var(--green)}table{width:100%;border-collapse:collapse}td,th{border-bottom:1px solid var(--line);padding:9px;text-align:left}th{color:var(--muted)}@media(max-width:840px){.grid{grid-template-columns:1fr}.nav{position:static}}
+</style>
+</head>
+<body><div class="wrap">
+<header><div><div class="brand">Engine API Docs</div><div class="pill">Supabase-inspired REST over GitHub-backed SQLite</div></div><a class="pill" href="/">Open Console</a></header>
+<div class="grid"><nav class="nav"><a href="#auth">Auth headers</a><a href="#rest">REST tables</a><a href="#auth-api">Auth compatibility</a><a href="#sdk">JavaScript client</a><a href="#sql">SQL admin</a><a href="#ops">Buffered ops</a><a href="#openapi">OpenAPI</a><a href="#windows">Windows CMD</a></nav><main>
+<section id="auth"><h2>Auth headers</h2><p>Engine accepts native and Supabase-style headers:</p><pre>x-api-key: Testplay
+apikey: Testplay
+Authorization: Bearer Testplay</pre></section>
+<section id="auth-api"><h2>Auth compatibility</h2><p>Engine is API-key based today, but exposes a Supabase-style current user endpoint for client compatibility:</p><pre>GET /api/auth/v1/user</pre></section>
+<section id="rest"><h2>REST table API</h2><table><tr><th>Action</th><th>Endpoint</th></tr><tr><td><span class="method">GET</span> select</td><td><code>/api/rest/v1/users?select=id,name&email=eq.a@b.com&order=id.desc&limit=10</code></td></tr><tr><td><span class="method">POST</span> insert</td><td><code>/api/rest/v1/users</code></td></tr><tr><td><span class="method">PUT</span> update</td><td><code>/api/rest/v1/users?id=eq.1</code></td></tr><tr><td><span class="method">DELETE</span> delete</td><td><code>/api/rest/v1/users?id=eq.1</code></td></tr></table><p>The legacy <code>/api/tables/:table</code> endpoints remain available. The <code>/api/rest/v1/:table</code> path is the Supabase/PostgREST-style alias.</p></section>
+<section id="sdk"><h2>JavaScript client</h2><pre>&lt;script type="module"&gt;
+import { createClient } from '/engine-client.js';
+const engine = createClient('https://your-project.vercel.app', 'Testplay');
+
+await engine.sql('CREATE TABLE users (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, email TEXT)');
+await engine.from('users').insert({ name: 'Asha', email: 'asha@example.com' });
+const rows = await engine.from('users').select('id,name,email').eq('email', 'asha@example.com').get();
+console.log(rows.data);
+&lt;/script&gt;</pre></section>
+<section id="sql"><h2>SQL admin endpoint</h2><p><code>POST /api/query</code> is admin/service-only. Use it for schema work and trusted maintenance, not public browser clients.</p><pre>{ "sql": "CREATE TABLE users (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT)" }</pre></section>
+<section id="ops"><h2>Buffered operations</h2><p>REST writes update the in-memory SQLite buffer immediately and are flushed to GitHub after the configured delay. This keeps UX fast while reducing GitHub PAT/API write pressure.</p><pre>GET /api/admin/operations
+POST /api/admin/operations { "table": "users" }</pre></section>
+<section id="openapi"><h2>OpenAPI</h2><p>Fetch the machine-readable spec:</p><pre>curl -H "x-api-key: Testplay" https://your-project.vercel.app/api/openapi</pre></section>
+<section id="windows"><h2>Windows CMD quickstart</h2><pre>curl -H "apikey: Testplay" https://your-project.vercel.app/api/init
+
+curl -X POST https://your-project.vercel.app/api/query ^
+  -H "Content-Type: application/json" ^
+  -H "apikey: Testplay" ^
+  -d "{\"sql\":\"CREATE TABLE users (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, email TEXT)\"}"
+
+curl -X POST https://your-project.vercel.app/api/rest/v1/users ^
+  -H "Content-Type: application/json" ^
+  -H "apikey: Testplay" ^
+  -d "{\"name\":\"Asha\",\"email\":\"asha@example.com\"}"
+
+curl -H "apikey: Testplay" "https://your-project.vercel.app/api/rest/v1/users?select=id,name,email&order=id.desc&limit=10"</pre></section>
+</main></div></div></body></html>

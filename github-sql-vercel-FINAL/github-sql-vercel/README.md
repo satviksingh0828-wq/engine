@@ -1,6 +1,6 @@
 # Engine — GitHub SQLite backend with dashboard
 
-Engine is a self-provisioning Vercel API that stores each table as a SQLite file in a private GitHub repo. It now includes a console dashboard, safer table APIs, scoped keys, rate limiting, audit logs, admin health checks, and table policy metadata.
+Engine is a self-provisioning Vercel API that stores each table as a SQLite file in a private GitHub repo. It now includes a console dashboard, Supabase/PostgREST-style REST aliases, a small JavaScript client, OpenAPI docs, safer table APIs, scoped keys, rate limiting, audit logs, admin health checks, and table policy metadata.
 
 > Engine is not a full Supabase replacement yet. It is a compact GitHub-backed backend for prototypes and small apps. For high write volume, joins, realtime, or large datasets, add a Postgres storage adapter.
 
@@ -16,7 +16,7 @@ Engine is a self-provisioning Vercel API that stores each table as a SQLite file
    - `API_KEY` required for legacy admin/service access
    - `API_KEYS` optional comma-separated scoped keys: `name:key:role`
 4. Redeploy after adding environment variables.
-5. Open `/` and enter the API key in the Engine Console.
+5. Open `/` and enter the API key in the Engine Console. Open `/docs.html` for complete API docs or `/api/openapi` for a machine-readable OpenAPI document.
 
 ## Windows CMD examples
 
@@ -34,31 +34,33 @@ curl -X POST https://your-project.vercel.app/api/query ^
 ```
 
 ```cmd
-curl -X POST https://your-project.vercel.app/api/tables/users ^
+curl -X POST https://your-project.vercel.app/api/rest/v1/users ^
   -H "Content-Type: application/json" ^
   -H "x-api-key: Testplay" ^
   -d "{\"name\":\"Asha\",\"email\":\"asha@example.com\"}"
 ```
 
 ```cmd
-curl -H "x-api-key: Testplay" "https://your-project.vercel.app/api/tables/users?order=id.desc&limit=10"
+curl -H "apikey: Testplay" "https://your-project.vercel.app/api/rest/v1/users?select=id,name,email&order=id.desc&limit=10"
 ```
 
 ```cmd
-curl -X PUT "https://your-project.vercel.app/api/tables/users?id=eq.1" ^
+curl -X PUT "https://your-project.vercel.app/api/rest/v1/users?id=eq.1" ^
   -H "Content-Type: application/json" ^
   -H "x-api-key: Testplay" ^
   -d "{\"name\":\"Updated Asha\"}"
 ```
 
 ```cmd
-curl -X DELETE "https://your-project.vercel.app/api/tables/users?id=eq.1" ^
+curl -X DELETE "https://your-project.vercel.app/api/rest/v1/users?id=eq.1" ^
   -H "x-api-key: Testplay"
 ```
 
 ## API surface
 
 - `GET /api/init` bootstraps the GitHub storage repo.
+- `GET /api/openapi` returns an OpenAPI 3.1 document.
+- `GET /api/auth/v1/user` returns Supabase-style current API-key metadata.
 - `GET /api/admin/health` returns storage health and limits.
 - `GET /api/admin/audit` returns recent in-memory audit events.
 - `GET /api/admin/operations` returns pending buffered GitHub writes.
@@ -70,7 +72,37 @@ curl -X DELETE "https://your-project.vercel.app/api/tables/users?id=eq.1" ^
 - `POST /api/tables/:table` inserts a row.
 - `PUT /api/tables/:table` updates rows with required filters.
 - `DELETE /api/tables/:table` deletes rows with required filters.
+- `GET|POST|PUT|DELETE /api/rest/v1/:table` provides a Supabase/PostgREST-style alias with `select`, filters, ordering, limits, and `apikey`/Bearer auth headers.
 - `POST /api/query` runs admin-only single-statement SQL.
+
+## Supabase-style usage
+
+Engine now accepts these auth headers:
+
+```http
+x-api-key: Testplay
+apikey: Testplay
+Authorization: Bearer Testplay
+```
+
+Use the Supabase-like REST alias:
+
+```cmd
+curl -H "apikey: Testplay" "https://your-project.vercel.app/api/rest/v1/users?select=id,name,email&email=eq.asha@example.com"
+```
+
+Use the browser/client SDK:
+
+```html
+<script type="module">
+import { createClient } from '/engine-client.js';
+const engine = createClient('https://your-project.vercel.app', 'Testplay');
+await engine.from('users').insert({ name: 'Asha', email: 'asha@example.com' });
+const rows = await engine.from('users').select('id,name,email').eq('email', 'asha@example.com').get();
+</script>
+```
+
+Full docs live at `/docs.html`; OpenAPI is available at `/api/openapi`. API-key metadata is available at `/api/auth/v1/user`.
 
 ## GitHub API optimization
 
@@ -100,6 +132,7 @@ curl -X POST https://your-project.vercel.app/api/admin/operations ^
 ## Security and platform improvements included
 
 - API keys can be configured as scoped records via `API_KEYS=name:key:role`.
+- Supabase-style `apikey` and `Authorization: Bearer` headers are supported in addition to `x-api-key`.
 - Requests are rate-limited per key/IP in memory.
 - Dynamic table and column identifiers are validated before SQL construction.
 - REST writes validate request body columns against schema metadata when available.
@@ -108,6 +141,7 @@ curl -X POST https://your-project.vercel.app/api/admin/operations ^
 - `DROP TABLE` now deletes the table file and unregisters schema metadata.
 - Audit events are recorded for table operations and exposed through an admin endpoint.
 - Buffered REST writes coalesce multiple quick row mutations into fewer GitHub commits.
+- OpenAPI and human docs are included for API consumers.
 - The dashboard includes overview, data editor, SQL editor, operations, policies, audit logs, and API docs.
 
 ## Limitations

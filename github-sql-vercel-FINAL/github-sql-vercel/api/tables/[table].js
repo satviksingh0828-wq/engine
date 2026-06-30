@@ -2,7 +2,7 @@ import { checkApiKey } from "../../lib/auth.js";
 import { getSqlEngine } from "../../lib/sqlEngine.js";
 import { getSchema } from "../../lib/github.js";
 import { getBufferedTableFile, persistTableFile, withTableLock } from "../../lib/tableStore.js";
-import { parseFilters, parseOrder, parseLimitOffset } from "../../lib/filters.js";
+import { parseFilters, parseOrder, parseLimitOffset, parseSelect } from "../../lib/filters.js";
 import { assertIdentifier, validateColumns } from "../../lib/validators.js";
 import { ensurePolicy } from "../../lib/policies.js";
 import { recordAuditEvent } from "../../lib/audit.js";
@@ -35,16 +35,18 @@ export default async function handler(req, res) {
     if (req.method === "GET") {
       ensurePolicy(schema, table, "select", role);
       const { whereClause, params } = parseFilters(req.query, schemaColumns);
+      const select = parseSelect(req.query, schemaColumns);
       const order = parseOrder(req.query, schemaColumns);
       const limitOffset = parseLimitOffset(req.query);
 
-      const stmt = db.prepare(`SELECT * FROM ${table} ${whereClause} ${order}${limitOffset}`);
+      const stmt = db.prepare(`SELECT ${select} FROM ${table} ${whereClause} ${order}${limitOffset}`);
       stmt.bind(params);
       const rows = [];
       while (stmt.step()) rows.push(stmt.getAsObject());
       stmt.free();
       db.close();
       recordAuditEvent(req, { action: "select", table, status: "success", count: rows.length });
+      res.setHeader("Content-Range", `0-${Math.max(rows.length - 1, 0)}/${rows.length}`);
       return res.status(200).json({ data: rows, count: rows.length, pendingFlush: pending });
     }
 

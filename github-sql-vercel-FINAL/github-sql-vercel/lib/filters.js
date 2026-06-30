@@ -10,7 +10,7 @@ const OPS = {
   like: "LIKE",
 };
 
-const RESERVED_PARAMS = new Set(["limit", "offset", "order", "table"]);
+const RESERVED_PARAMS = new Set(["limit", "offset", "order", "table", "select"]);
 
 function validateFilterColumn(key, allowedColumns) {
   assertIdentifier(key, `Filter column '${key}'`);
@@ -48,6 +48,20 @@ export function parseFilters(query, allowedColumns = null) {
     whereClause: conditions.length ? `WHERE ${conditions.join(" AND ")}` : "",
     params,
   };
+}
+
+export function parseSelect(query, allowedColumns = null) {
+  const requested = String(query?.select || "*").trim();
+  if (!requested || requested === "*") return "*";
+
+  const columns = requested.split(",").map((column) => column.trim()).filter(Boolean);
+  if (!columns.length) return "*";
+
+  for (const column of columns) {
+    validateFilterColumn(column, allowedColumns);
+  }
+
+  return columns.join(", ");
 }
 
 export function parseOrder(query, allowedColumns = null) {
