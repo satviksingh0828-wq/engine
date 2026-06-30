@@ -1,4 +1,3 @@
-// lib/github.js
 import { Octokit } from "@octokit/rest";
 import { withRetry } from "./retry.js";
 
@@ -12,8 +11,6 @@ function tablePath(tableName) {
   return `tables/${tableName}.db`;
 }
 
-// ---------- Bootstrap: create + initialize the repo on first use ----------
-
 async function repoExists() {
   try {
     await octokit.repos.get({ owner: OWNER, repo: REPO });
@@ -25,12 +22,10 @@ async function repoExists() {
 }
 
 async function createRepo() {
-  // Requires a classic PAT with "repo" scope, OR a fine-grained token with
-  // account-level "Administration: write" permission. See README.
   await octokit.repos.createForAuthenticatedUser({
     name: REPO,
     private: true,
-    auto_init: true, // creates the repo with an initial commit so BRANCH exists
+    auto_init: true,
     description: "Auto-provisioned SQL storage repo (managed by Vercel app)",
   });
 }
@@ -56,7 +51,7 @@ async function createFile(path, contentString, message) {
   });
 }
 
-let bootstrapped = false; // cache across warm serverless invocations
+let bootstrapped = false;
 
 export async function ensureRepoBootstrapped() {
   if (bootstrapped) return;
@@ -64,8 +59,6 @@ export async function ensureRepoBootstrapped() {
   const exists = await repoExists();
   if (!exists) {
     await createRepo();
-    // GitHub's API has brief read-after-write lag right after repo creation.
-    // Give it a moment before checking/creating files inside it.
     await new Promise((r) => setTimeout(r, 1500));
   }
 
@@ -91,8 +84,6 @@ export async function ensureRepoBootstrapped() {
 
   bootstrapped = true;
 }
-
-// ---------- Table file read/write ----------
 
 export async function getTableFile(tableName) {
   try {
@@ -123,8 +114,6 @@ export async function saveTableFile(tableName, buffer, sha, commitMessage) {
   );
 }
 
-// ---------- Schema registry (meta/_schema.json) ----------
-
 export async function getSchema() {
   try {
     const { data } = await octokit.repos.getContent({
@@ -138,10 +127,6 @@ export async function getSchema() {
       sha: data.sha,
     };
   } catch (err) {
-    // 404 here usually means the schema file was just created moments ago and
-    // GitHub's API hasn't caught up yet (read-after-write lag), or bootstrap
-    // hasn't run yet. Either way, fall back to an empty schema instead of
-    // crashing — the next write will create the file properly.
     if (err.status === 404) {
       return { schema: { tables: {} }, sha: null };
     }
@@ -174,7 +159,6 @@ export async function listTables() {
     const { schema } = await getSchema();
     return schema.tables || {};
   } catch (err) {
-    // Don't let a transient read issue break the whole /api/init response
     console.error("listTables fallback:", err.message);
     return {};
   }
