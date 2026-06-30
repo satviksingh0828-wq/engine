@@ -1,11 +1,9 @@
-// api/init.js  (Vercel serverless function)
-// Manually trigger repo creation/bootstrap, and check setup status.
-// Useful right after deploying, to confirm everything connected correctly
-// before you start sending SQL.
-
 import { ensureRepoBootstrapped, listTables } from "../lib/github.js";
+import { checkApiKey } from "../lib/auth.js";
 
 export default async function handler(req, res) {
+  if (!checkApiKey(req, res)) return;
+
   try {
     await ensureRepoBootstrapped();
     const tables = await listTables();
