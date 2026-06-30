@@ -114,6 +114,21 @@ export async function saveTableFile(tableName, buffer, sha, commitMessage) {
   );
 }
 
+export async function deleteTableFile(tableName, sha) {
+  const current = sha || (await getTableFile(tableName)).sha;
+  if (!current) return null;
+  return withRetry(() =>
+    octokit.repos.deleteFile({
+      owner: OWNER,
+      repo: REPO,
+      path: tablePath(tableName),
+      message: `Delete table ${tableName}`,
+      branch: BRANCH,
+      sha: current,
+    })
+  );
+}
+
 export async function getSchema() {
   try {
     const { data } = await octokit.repos.getContent({
@@ -150,8 +165,33 @@ export async function saveSchema(schemaObj, sha) {
 
 export async function registerTable(tableName, columns) {
   const { schema, sha } = await getSchema();
-  schema.tables[tableName] = { columns, createdAt: new Date().toISOString() };
+  schema.tables[tableName] = {
+    columns,
+    policies: schema.tables[tableName]?.policies || {
+      select: { roles: ["admin", "service", "anon"] },
+      insert: { roles: ["admin", "service"] },
+      update: { roles: ["admin", "service"] },
+      delete: { roles: ["admin", "service"] },
+    },
+    createdAt: schema.tables[tableName]?.createdAt || new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  };
   await saveSchema(schema, sha);
+}
+
+export async function unregisterTable(tableName) {
+  const { schema, sha } = await getSchema();
+  delete schema.tables[tableName];
+  await saveSchema(schema, sha);
+}
+
+export async function updateTablePolicies(tableName, policies) {
+  const { schema, sha } = await getSchema();
+  if (!schema.tables[tableName]) throw new Error(`Table '${tableName}' does not exist.`);
+  schema.tables[tableName].policies = policies;
+  schema.tables[tableName].updatedAt = new Date().toISOString();
+  await saveSchema(schema, sha);
+  return schema.tables[tableName];
 }
 
 export async function listTables() {
