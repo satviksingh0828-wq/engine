@@ -64,6 +64,9 @@ export async function ensureRepoBootstrapped() {
   const exists = await repoExists();
   if (!exists) {
     await createRepo();
+    // GitHub's API has brief read-after-write lag right after repo creation.
+    // Give it a moment before checking/creating files inside it.
+    await new Promise((r) => setTimeout(r, 1500));
   }
 
   if (!(await fileExists("tables/.gitkeep"))) {
@@ -123,16 +126,27 @@ export async function saveTableFile(tableName, buffer, sha, commitMessage) {
 // ---------- Schema registry (meta/_schema.json) ----------
 
 export async function getSchema() {
-  const { data } = await octokit.repos.getContent({
-    owner: OWNER,
-    repo: REPO,
-    path: "meta/_schema.json",
-    ref: BRANCH,
-  });
-  return {
-    schema: JSON.parse(Buffer.from(data.content, "base64").toString("utf-8")),
-    sha: data.sha,
-  };
+  try {
+    const { data } = await octokit.repos.getContent({
+      owner: OWNER,
+      repo: REPO,
+      path: "meta/_schema.json",
+      ref: BRANCH,
+    });
+    return {
+      schema: JSON.parse(Buffer.from(data.content, "base64").toString("utf-8")),
+      sha: data.sha,
+    };
+  } catch (err) {
+    // 404 here usually means the schema file was just created moments ago and
+    // GitHub's API hasn't caught up yet (read-after-write lag), or bootstrap
+    // hasn't run yet. Either way, fall back to an empty schema instead of
+    // crashing — the next write will create the file properly.
+    if (err.status === 404) {
+      return { schema: { tables: {} }, sha: null };
+    }
+    throw err;
+  }
 }
 
 export async function saveSchema(schemaObj, sha) {
@@ -144,7 +158,7 @@ export async function saveSchema(schemaObj, sha) {
       message: "Update schema registry",
       content: Buffer.from(JSON.stringify(schemaObj, null, 2)).toString("base64"),
       branch: BRANCH,
-      sha,
+      sha: sha || undefined,
     })
   );
 }
@@ -156,6 +170,12 @@ export async function registerTable(tableName, columns) {
 }
 
 export async function listTables() {
-  const { schema } = await getSchema();
-  return schema.tables;
+  try {
+    const { schema } = await getSchema();
+    return schema.tables || {};
+  } catch (err) {
+    // Don't let a transient read issue break the whole /api/init response
+    console.error("listTables fallback:", err.message);
+    return {};
+  }
 }
