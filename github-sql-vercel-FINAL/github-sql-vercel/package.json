@@ -1,0 +1,10 @@
+{
+  "name": "github-sql-vercel",
+  "version": "2.0.0",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "@octokit/rest": "^20.0.2",
+    "sql.js": "^1.10.3"
+  }
+}
