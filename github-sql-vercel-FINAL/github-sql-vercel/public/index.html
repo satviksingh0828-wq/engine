@@ -205,13 +205,13 @@ function switchTab(tab) {
 
 function renderSqlTab() {
   const content = document.getElementById('content');
-  content.innerHTML = \`
+  content.innerHTML = `
     <textarea id="sql-editor" placeholder="CREATE TABLE users (id INTEGER PRIMARY KEY, name TEXT, email TEXT)"></textarea>
     <div class="toolbar">
       <button class="primary" onclick="runSql()">Run query</button>
     </div>
     <div id="sql-result"></div>
-  \`;
+  `;
 }
 
 async function runSql() {
