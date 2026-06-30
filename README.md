@@ -1,90 +1,94 @@
-# Engine — GitHub SQLite backend with dashboard
+# SupaForge
 
-Engine is a self-provisioning Vercel API that stores each table as a SQLite file in a private GitHub repo. It now includes a console dashboard, safer table APIs, scoped keys, rate limiting, audit logs, admin health checks, and table policy metadata.
+A full-featured, drop-in Supabase alternative that uses GitHub as encrypted storage. Deploy to Vercel in minutes — no Postgres, no servers, no extra infra.
 
-> Engine is not a full Supabase replacement yet. It is a compact GitHub-backed backend for prototypes and small apps. For high write volume, joins, realtime, or large datasets, add a Postgres storage adapter.
+## Features
 
-## Setup
+- **Supabase-compatible REST API** — `/rest/v1/table` with the same filter syntax (`eq`, `neq`, `gt`, `like`, etc.)
+- **Auth API** — JWT sign-up / sign-in / refresh at `/auth/v1/` — works with `supabase-js` out of the box
+- **File Storage** — Bucket-based file storage at `/storage/v1/` backed by GitHub
+- **Table Editor** — Visual data browser with insert / edit / delete rows
+- **SQL Editor** — Run raw SQL against your tables with history
+- **Row-Level Policies** — Per-table role-based access control
+- **AES-256-GCM Encryption** — Auth users and storage metadata encrypted at rest
+- **Audit Logs** — Every API call tracked in memory
+- **Supabase Dashboard UI** — Identical look and feel
 
-1. Deploy this project to Vercel.
-2. Create a GitHub token with repo creation and contents write permission.
-3. Set environment variables:
-   - `GITHUB_TOKEN`
-   - `GITHUB_OWNER`
-   - `GITHUB_REPO`
-   - `GITHUB_BRANCH` optional, defaults to `main`
-   - `API_KEY` required for legacy admin/service access
-   - `API_KEYS` optional comma-separated scoped keys: `name:key:role`
-4. Redeploy after adding environment variables.
-5. Open `/` and enter the API key in the Engine Console.
+## Drop-in replacement
 
-## Windows CMD examples
+```js
+import { createClient } from '@supabase/supabase-js'
 
-Replace `https://your-project.vercel.app` with your deployment URL.
+// Just swap the URL — everything else is identical
+const supabase = createClient('https://your-project.vercel.app', 'YOUR_API_KEY')
 
-```cmd
-curl -H "x-api-key: Testplay" https://your-project.vercel.app/api/init
+const { data } = await supabase.from('users').select('*').limit(10)
+const { data } = await supabase.auth.signInWithPassword({ email, password })
+await supabase.storage.from('bucket').upload('file.txt', blob)
 ```
 
-```cmd
-curl -X POST https://your-project.vercel.app/api/query ^
-  -H "Content-Type: application/json" ^
-  -H "x-api-key: Testplay" ^
-  -d "{\"sql\":\"CREATE TABLE users (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, email TEXT)\"}"
+## Deploy to Vercel
+
+1. Push this repo to GitHub
+2. Import into [Vercel](https://vercel.com/new)
+3. Add environment variables (see below)
+4. Done — your SupaForge instance is live
+
+## Environment Variables
+
+| Variable | Description | Required |
+|---|---|---|
+| `GITHUB_TOKEN` | GitHub PAT with `repo` scope | ✅ |
+| `GITHUB_OWNER` | GitHub username or org | ✅ |
+| `GITHUB_REPO` | Repository name for storage | ✅ |
+| `GITHUB_BRANCH` | Branch to use (default: `main`) | — |
+| `API_KEY` | Master admin API key | ✅ |
+| `API_KEYS` | Scoped keys: `name:key:role,...` | — |
+| `JWT_SECRET` | JWT signing secret | Recommended |
+| `ENCRYPTION_KEY` | AES-256 encryption key | Recommended |
+| `ENCRYPTION_SALT` | Key derivation salt | Recommended |
+
+## API Reference
+
+### REST — `/rest/v1/{table}`
+
+```
+GET    /rest/v1/users?select=*&limit=10
+GET    /rest/v1/users?id=eq.1&name=like.Al*
+POST   /rest/v1/users          body: { name, email }
+PATCH  /rest/v1/users?id=eq.1  body: { name }
+DELETE /rest/v1/users?id=eq.1
 ```
 
-```cmd
-curl -X POST https://your-project.vercel.app/api/tables/users ^
-  -H "Content-Type: application/json" ^
-  -H "x-api-key: Testplay" ^
-  -d "{\"name\":\"Asha\",\"email\":\"asha@example.com\"}"
+Headers: `x-api-key: KEY` or `Authorization: Bearer JWT`  
+Set `Prefer: return=representation` to get inserted/updated rows back.
+
+### Auth — `/auth/v1/`
+
+```
+POST /auth/v1/signup        { email, password }
+POST /auth/v1/token?grant_type=password  { email, password }
+POST /auth/v1/token?grant_type=refresh_token  { refresh_token }
+GET  /auth/v1/user          (Bearer token)
+PUT  /auth/v1/user          (Bearer token)
+POST /auth/v1/logout
 ```
 
-```cmd
-curl -H "x-api-key: Testplay" "https://your-project.vercel.app/api/tables/users?order=id.desc&limit=10"
+### Storage — `/storage/v1/`
+
+```
+GET    /api/storage/v1/buckets
+POST   /api/storage/v1/buckets     { id, name, public }
+DELETE /api/storage/v1/buckets?id=NAME
+POST   /api/storage/v1/objects     { bucket, path, data: base64, encoding: "base64" }
+GET    /api/storage/v1/objects/:bucket/:path
+DELETE /api/storage/v1/objects/:bucket/:path
 ```
 
-```cmd
-curl -X PUT "https://your-project.vercel.app/api/tables/users?id=eq.1" ^
-  -H "Content-Type: application/json" ^
-  -H "x-api-key: Testplay" ^
-  -d "{\"name\":\"Updated Asha\"}"
+## Local development (Replit)
+
+```
+node server.js
 ```
 
-```cmd
-curl -X DELETE "https://your-project.vercel.app/api/tables/users?id=eq.1" ^
-  -H "x-api-key: Testplay"
-```
-
-## API surface
-
-- `GET /api/init` bootstraps the GitHub storage repo.
-- `GET /api/admin/health` returns storage health and limits.
-- `GET /api/admin/audit` returns recent in-memory audit events.
-- `GET /api/admin/policies` lists table policies.
-- `PUT /api/admin/policies` updates table role policies.
-- `GET /api/tables` lists schema registry tables.
-- `GET /api/tables/:table` reads rows with filters.
-- `POST /api/tables/:table` inserts a row.
-- `PUT /api/tables/:table` updates rows with required filters.
-- `DELETE /api/tables/:table` deletes rows with required filters.
-- `POST /api/query` runs admin-only single-statement SQL.
-
-## Security and platform improvements included
-
-- API keys can be configured as scoped records via `API_KEYS=name:key:role`.
-- Requests are rate-limited per key/IP in memory.
-- Dynamic table and column identifiers are validated before SQL construction.
-- REST writes validate request body columns against schema metadata when available.
-- Raw SQL is admin/service-only.
-- Table policies are stored in schema metadata and enforced by REST and SQL paths.
-- `DROP TABLE` now deletes the table file and unregisters schema metadata.
-- Audit events are recorded for table operations and exposed through an admin endpoint.
-- The dashboard includes overview, data editor, SQL editor, policies, audit logs, and API docs.
-
-## Limitations
-
-- GitHub-backed SQLite is not suited for high concurrent writes.
-- Each logical table is a separate SQLite file, so cross-table joins are intentionally unsupported.
-- Audit and rate-limit state are in-memory per serverless instance.
-- Password login, OAuth, realtime subscriptions, storage buckets, billing, and Postgres storage are architectural next steps.
+Open `http://localhost:5000` — the dashboard works the same as Vercel.
