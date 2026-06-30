@@ -3,6 +3,7 @@
 // Auto-creates and bootstraps the repo on the very first call.
 
 import initSqlJs from "sql.js";
+import { createRequire } from "module";
 import {
   ensureRepoBootstrapped,
   getTableFile,
@@ -12,14 +13,17 @@ import {
 } from "../lib/github.js";
 import { parseStatement } from "../lib/parseSql.js";
 
+const require = createRequire(import.meta.url);
+
 let SQL;
 async function getSqlEngine() {
   if (!SQL) {
+    // require.resolve finds the actual installed location of the wasm file
+    // inside node_modules, regardless of the function's working directory —
+    // this is what makes it reliable inside Vercel's serverless runtime.
+    const wasmPath = require.resolve("sql.js/dist/sql-wasm.wasm");
     SQL = await initSqlJs({
-      // Local node_modules paths don't reliably resolve inside Vercel's
-      // serverless function runtime. Loading the wasm binary from sql.js's
-      // own CDN avoids that entirely.
-      locateFile: (file) => `https://sql.js.org/dist/${file}`,
+      locateFile: () => wasmPath,
     });
   }
   return SQL;
